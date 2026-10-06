@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍁</text></svg>">
+<title>入籍陷阱題特訓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#F2F5F6; --surface:#FFFFFF; --sunk:#E7ECEE; --ink:#15202A; --muted:#566471; --line:#D3DBDF;
+  --accent:#0F5E6B; --accent-ink:#FFFFFF; --accent-soft:#DDEFF1;
+  --trap:#A34405; --trap-bg:#FDEBD8;
+  --good:#146C3E; --good-bg:#E0F3E8; --bad:#AE2318; --bad-bg:#FBE4E1;
+  --en:"Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --zh:"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E151A; --surface:#162129; --sunk:#1E2B34; --ink:#E4EBEF; --muted:#94A3AF; --line:#2A3A45;
+    --accent:#5DB6C2; --accent-ink:#0B1A1F; --accent-soft:#16343A;
+    --trap:#F2A45F; --trap-bg:#3A2614;
+    --good:#6FD19A; --good-bg:#15301F; --bad:#F2877C; --bad-bg:#3A1A17;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E151A; --surface:#162129; --sunk:#1E2B34; --ink:#E4EBEF; --muted:#94A3AF; --line:#2A3A45;
+  --accent:#5DB6C2; --accent-ink:#0B1A1F; --accent-soft:#16343A;
+  --trap:#F2A45F; --trap-bg:#3A2614;
+  --good:#6FD19A; --good-bg:#15301F; --bad:#F2877C; --bad-bg:#3A1A17;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--zh);font-size:16px;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 64px}
+h1,h2,h3{text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
+.brand h1{font-size:26px;font-weight:700;letter-spacing:.01em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+nav.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:10px;margin-bottom:20px;overflow-x:auto}
+nav.tabs button{flex:1;min-width:max-content;border:0;background:transparent;padding:9px 12px;border-radius:7px;font-size:15px;color:var(--muted);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--bad);color:#fff;font-size:12px;line-height:20px;text-align:center;margin-left:4px;font-family:var(--mono)}
+.sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.set{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.set h3{font-size:19px}
+.set .meta{color:var(--muted);font-size:13px;font-family:var(--mono)}
+.set .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.btn{border:1px solid var(--line);background:var(--surface);padding:9px 14px;border-radius:8px;font-size:15px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn:disabled{opacity:.45;cursor:default}
+.bar{height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:18px;font-size:14px;color:var(--muted)}
+.note b{color:var(--ink)}
+/* question card */
+.qhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.qhead .left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{font-size:12px;padding:2px 8px;border-radius:5px;background:var(--trap-bg);color:var(--trap);font-weight:700}
+.tag.ch{background:var(--sunk);color:var(--muted);font-weight:500}
+.counter{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.timer{font-family:var(--mono);font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--bad)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.qen{font-family:var(--en);font-size:22px;line-height:1.45;font-weight:700;margin:0}
+.qen mark{background:var(--trap-bg);color:var(--trap);padding:0 3px;border-radius:3px}
+.qzh{margin:8px 0 0;color:var(--muted);font-size:16px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 12px;font-size:13px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.opts{display:grid;gap:10px;margin-top:18px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 14px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .l{font-family:var(--mono);font-size:14px;width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--sunk);color:var(--muted)}
+.opt .t{display:flex;flex-direction:column;gap:2px}
+.opt .en{font-family:var(--en);font-size:18px;line-height:1.4}
+.opt .zh{font-size:14px;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .l{background:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--good);background:var(--good-bg)}
+.opt.right .l{background:var(--good);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt.wrong .l{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.fb{margin-top:16px;border-radius:10px;padding:14px 16px;border:1px solid var(--line);background:var(--sunk)}
+.fb .res{font-weight:700;font-size:17px;margin-bottom:4px}
+.fb .res.ok{color:var(--good)} .fb .res.no{color:var(--bad)}
+.vocab{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.vocab span{font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.vocab span b{font-family:var(--en)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.dots button{width:32px;height:32px;border-radius:6px;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:13px}
+.dots button.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.dots button.cur{outline:2px solid var(--ink)}
+.score{text-align:center;padding:10px 0 4px}
+.score .big{font-family:var(--en);font-size:56px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.score .pass{color:var(--good)} .score .fail{color:var(--bad)}
+.list{display:grid;gap:12px;margin-top:14px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.item .qen{font-size:18px}
+.item .ans{margin-top:8px;font-size:15px}
+.item .ans .en{font-family:var(--en);font-weight:700;color:var(--good)}
+.item .your{color:var(--bad);font-size:14px}
+.item .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.status{font-size:13px;color:var(--muted);min-height:1.4em;margin-top:8px}
+table.dict{width:100%;border-collapse:collapse;font-size:15px}
+.dictwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table.dict th,table.dict td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.dict th{font-size:12px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+table.dict td:first-child{font-family:var(--en);font-weight:700;white-space:nowrap}
+table.dict tr:last-child td{border-bottom:0}
+.sec-title{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:4px 0 12px;flex-wrap:wrap}
+.sec-title h2{font-size:20px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:12px}
+
+.tl{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tl li{display:grid;grid-template-columns:88px 1fr;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.tl li:last-child{border-bottom:0}
+.tl .yr{font-family:var(--en);font-weight:700;font-size:20px;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.3}
+.tl .who{font-family:var(--en);font-weight:700;font-size:17px}
+.tl .who small{font-family:var(--zh);font-weight:500;color:var(--muted);font-size:14px;margin-left:6px}
+.tl .what{font-size:15px;margin-top:2px}
+.tl .ask{margin-top:6px;font-size:14px;color:var(--trap);background:var(--trap-bg);border-radius:6px;padding:4px 8px;display:inline-block}
+.tl .ask span{font-family:var(--en)}
+@media (max-width:480px){.tl li{grid-template-columns:1fr;gap:4px}}
+@media (max-width:480px){.qen{font-size:20px}.opt .en{font-size:17px}.card{padding:16px}}
+@media (prefers-reduced-motion:no-preference){.opt{transition:border-color .15s,background .15s}}
+.who{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.who b{color:var(--ink)}
+.who button{border:0;background:none;color:var(--accent);padding:4px 2px;font-size:14px;text-decoration:underline}
+.login{max-width:420px;margin:8px auto 0}
+.login label{display:block;font-weight:700;margin:14px 0 6px}
+.login input{width:100%;font:inherit;font-size:18px;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.login .btn{width:100%;margin-top:18px;padding:12px}
+.login .err{color:var(--bad);font-size:14px;min-height:1.4em;margin-top:8px}
+.flash{background:var(--good-bg);color:var(--good);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Canadian Citizenship Test · Trap Edition</div>
+      <h1>入籍陷阱題特訓</h1>
+      <p>題目換個方式問，答案還是同一個。依官方 Discover Canada 內容編寫。</p>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-home" aria-selected="true" data-tab="home">三套題目</button>
+    <button role="tab" id="tab-wrong" aria-selected="false" data-tab="wrong">錯題本<span class="badge" id="wrongBadge" hidden>0</span></button>
+    <button role="tab" id="tab-time" aria-selected="false" data-tab="time">速讀時間軸</button>
+    <button role="tab" id="tab-dict" aria-selected="false" data-tab="dict">陷阱字典</button>
+  </nav>
+  <main id="view"></main>
+</div>
+
+<script>
+// a = index of correct option (default 0, options are shuffled unless f:1)
+const Q1 = [
+// ===== 權利與責任 rights =====
+{c:'rights',t:'N',q:'Which of the following is **NOT** a responsibility of Canadian citizenship?',z:'下列哪一項「不是」加拿大公民的責任？',
+o:[['Owning a home','擁有自己的房子'],['Obeying the law','遵守法律'],['Serving on a jury when called to do so','被傳喚時擔任陪審員'],['Taking responsibility for oneself and one\'s family','照顧自己和家人']],
+e:'公民責任包括：守法、照顧自己與家人、擔任陪審員、投票、幫助社區、保護遺產與環境。買房子不是責任。',k:[['responsibility','責任'],['jury','陪審團']]},
+{c:'rights',t:'S',q:'The Canadian Charter of Rights and Freedoms was **entrenched** in which document?',z:'《權利與自由憲章》被「寫入（確立）」在哪一份文件中？',
+o:[['The Constitution of Canada, in 1982','1982 年的加拿大憲法'],['The British North America Act, in 1867','1867 年的英屬北美法案'],['Magna Carta, in 1215','1215 年的大憲章'],['The Quebec Act, in 1774','1774 年的魁北克法案']],
+e:'1982 年憲法修改時加入了《權利與自由憲章》。entrenched = 牢固地寫進去。',k:[['entrenched','確立、寫入（法律中）'],['Charter','憲章']]},
+{c:'rights',t:'R',q:'Which document, signed in England in 1215, is the **source** of freedoms such as habeas corpus?',z:'哪份 1215 年在英國簽署的文件，是人身保護令等自由的「源頭」？',
+o:[['Magna Carta (the Great Charter of Freedoms)','大憲章'],['The Canadian Charter of Rights and Freedoms','加拿大權利與自由憲章'],['The Constitution Act, 1982','1982 年憲法法案'],['The Royal Proclamation of 1763','1763 年皇家公告']],
+e:'題目沒說 Magna Carta，而是給年份和用途反問你。1215 年 = 大憲章。',k:[['source','來源'],['habeas corpus','人身保護令']]},
+{c:'rights',t:'S',q:'"Habeas corpus" gives you the right to:',z:'「Habeas corpus（人身保護令）」給你什麼權利？',
+o:[['Challenge unlawful detention by the state','挑戰政府的非法拘留'],['Vote in municipal elections','在市政選舉投票'],['Own land anywhere in Canada','在加拿大任何地方擁有土地'],['Use either official language in court','在法庭使用任一官方語言']],
+e:'Habeas corpus 是拉丁文，意思是政府不能隨便把人關起來，你有權挑戰非法拘留。',k:[['unlawful','非法的'],['detention','拘留']]},
+{c:'rights',t:'W',q:'Which statement about **mobility rights** is **TRUE**?',z:'關於「遷徙權」，哪一句是「正確」的？',
+o:[['Canadians can live and work anywhere in Canada, enter and leave the country freely, and apply for a passport','加拿大人可在全國任何地方居住工作、自由出入境、申請護照'],['Canadians need permission to move to another province','搬到別省需要許可'],['Only citizens born in Canada may leave and re-enter freely','只有在加拿大出生的公民才能自由出入境'],['Mobility rights apply only to people over 21','遷徙權只適用於 21 歲以上']],
+e:'mobility = 移動。遷徙權：在任何地方生活工作、自由出入境、申請護照。',k:[['mobility','移動、遷徙'],['statement','敘述、句子']]},
+{c:'rights',t:'N',q:'All of the following are fundamental freedoms protected by the Charter **EXCEPT**:',z:'以下都是憲章保護的基本自由，「除了」哪一項？',
+o:[['Freedom from paying taxes','不用繳稅的自由'],['Freedom of conscience and religion','良心與宗教自由'],['Freedom of thought, belief, opinion and expression','思想、信仰、意見與表達自由'],['Freedom of peaceful assembly','和平集會自由']],
+e:'EXCEPT = 除了……以外。題目要你找「不屬於」的那一個。四大基本自由：良心與宗教、思想信仰表達（含言論與新聞）、和平集會、結社。',k:[['EXCEPT','除了（找不屬於的）'],['assembly','集會']]},
+{c:'rights',t:'C',q:'Your neighbour receives a notice to **serve on a jury**. What should she do?',z:'你的鄰居收到「擔任陪審員」的通知，她應該怎麼做？',
+o:[['Serve when called; it is a responsibility of citizenship','被傳喚就去，這是公民責任'],['Ignore it unless she wants to volunteer','除非想當義工，否則不理'],['Pay a fee to be excused automatically','付錢就自動免除'],['Only citizens over 65 need to serve','只有 65 歲以上的公民需要去']],
+e:'情境題：換成「鄰居收到通知」的故事，其實就是問「擔任陪審員是公民責任」。',k:[['notice','通知'],['serve on a jury','擔任陪審員']]},
+{c:'rights',t:'T',q:'True or False: In Canada, men and women are **equal** under the law.',z:'是非題：在加拿大，男女在法律面前平等。',
+o:[['True','對'],['False','錯']],a:0,f:1,
+e:'正確。Discover Canada 明確寫出男女在法律上平等。',k:[['equal','平等']]},
+{c:'rights',t:'S',q:'Which of the following is a **RESPONSIBILITY** rather than a right?',z:'下列哪一項是「責任」而「不是」權利？',
+o:[['Obeying the law','遵守法律'],['Freedom of religion','宗教自由'],['Mobility rights','遷徙權'],['Official language rights','官方語言權利']],
+e:'rather than = 而不是。宗教自由、遷徙權、語言權都是「權利」；守法是「責任」。',k:[['rather than','而不是'],['right','權利']]},
+{c:'rights',t:'C',q:'Someone says violence against a spouse is acceptable because of his cultural traditions. According to Canadian law, this is:',z:'有人說因為文化傳統，對配偶施暴是可以接受的。依照加拿大法律，這是：',
+o:[['A crime that is severely punished','會被嚴厲懲罰的罪行'],['Acceptable if it happens at home','在家裡發生就可以'],['Allowed for newcomers during their first three years','新移民前三年可以'],['A matter only for religious leaders','只由宗教領袖處理']],
+e:'加拿大的開放不包括家暴、名譽殺人、女性割禮、強迫婚姻等野蠻習俗，這些都依法嚴懲。',k:[['spouse','配偶'],['severely','嚴厲地']]},
+{c:'rights',t:'S',q:'Military service in Canada is:',z:'在加拿大服兵役是：',
+o:[['Not compulsory, but serving is a noble way to contribute','不是義務的，但服役是貢獻國家的高尚方式'],['Compulsory for all men aged 18 to 25','18–25 歲男性必須服役'],['Compulsory for all new citizens','所有新公民必須服役'],['Not allowed for dual citizens','雙重國籍者不可服役']],
+e:'compulsory = 強制的。加拿大沒有強制兵役。',k:[['compulsory','強制的、義務的'],['noble','高尚的']]},
+{c:'rights',t:'R',q:'Which action is an example of **protecting and enjoying our heritage and environment**?',z:'哪個行為是「保護與享受我們的遺產和環境」的例子？',
+o:[['Avoiding waste and pollution while protecting natural, cultural and architectural heritage','避免浪費和污染，同時保護自然、文化和建築遺產'],['Voting only in federal elections','只在聯邦選舉投票'],['Joining the Canadian Forces','加入加拿大軍隊'],['Learning both official languages','學習兩種官方語言']],
+e:'heritage = 遺產；environment = 環境。答案重點：不浪費、不污染、保護遺產。',k:[['heritage','遺產'],['pollution','污染']]},
+{c:'rights',t:'W',q:'Which statement about the **rule of law** in Canada is **TRUE**?',z:'關於加拿大的「法治」，哪一句是「正確」的？',
+o:[['Everyone, including police, judges and politicians, must follow the law','每個人，包括警察、法官、政治人物，都必須守法'],['Government officials are above the law','政府官員可以不受法律約束'],['The law applies only to citizens','法律只適用於公民'],['Judges may ignore laws they disagree with','法官可以不理自己不同意的法律']],
+e:'rule of law = 法治：所有人都要守法，沒有人在法律之上。',k:[['rule of law','法治'],['above the law','凌駕法律之上']]},
+{c:'rights',t:'S',q:'According to the Charter, **multiculturalism** is:',z:'根據憲章，「多元文化」是：',
+o:[['A fundamental characteristic of Canadian heritage and identity','加拿大遺產與身份認同的基本特徵'],['A temporary government program','暫時性的政府計畫'],['A policy that applies only in large cities','只適用大城市的政策'],['A right that replaces official languages','取代官方語言的權利']],
+e:'fundamental characteristic = 基本特徵。',k:[['fundamental','基本的'],['identity','身份認同']]},
+{c:'rights',t:'N',q:'Which of the following is **NOT** a requirement for voting in a federal election?',z:'下列哪一項「不是」聯邦選舉投票的條件？',
+o:[['Owning property','擁有房地產'],['Being a Canadian citizen','是加拿大公民'],['Being at least 18 years old on election day','選舉日當天滿 18 歲'],['Being on the voters\' list','在選民名冊上']],
+e:'投票三條件：公民、選舉日滿 18 歲、在選民名冊上。不需要有房產。',k:[['requirement','條件、要求'],['voters\' list','選民名冊']]},
+
+// ===== 誰是加拿大人 people =====
+{c:'people',t:'S',q:'Canada is often described as being built by **three founding peoples**. Who are they?',z:'加拿大常被說是由「三個建國民族」建立的，是哪三個？',
+o:[['Aboriginal, French and British','原住民、法國人、英國人'],['English, Scottish and Irish','英格蘭、蘇格蘭、愛爾蘭人'],['First Nations, Inuit and Métis','第一民族、因紐特人、梅蒂人'],['French, Spanish and Portuguese','法國、西班牙、葡萄牙人']],
+e:'陷阱：第一民族、因紐特、梅蒂是「原住民的三個群體」，不是「三個建國民族」。建國民族 = 原住民＋法國＋英國。',k:[['founding','建國的'],['peoples','民族']]},
+{c:'people',t:'N',q:'Which group is **NOT** one of the three distinct groups of Aboriginal peoples in Canada?',z:'哪一群「不是」加拿大原住民的三個群體之一？',
+o:[['Acadians','阿卡迪亞人'],['First Nations','第一民族'],['Inuit','因紐特人'],['Métis','梅蒂人']],
+e:'Acadians（阿卡迪亞人）是法國殖民者的後代，不是原住民。',k:[['distinct','不同的、各自獨立的'],['Aboriginal','原住民的']]},
+{c:'people',t:'S',q:'In the Inuktitut language, the word "**Inuit**" means:',z:'在因紐特語中，「Inuit」這個字是什麼意思？',
+o:[['The people','人們'],['Our land','我們的土地'],['Village','村莊'],['Northern lights','北極光']],
+e:'Inuit = the people。另外 Nunavut = our land（我們的土地），kanata = village（村莊）。三個容易混淆。',k:[['means','意思是']]},
+{c:'people',t:'R',q:'Which Aboriginal people are of **mixed** Aboriginal and European **ancestry**, with most living in the Prairie provinces?',z:'哪一群原住民是原住民與歐洲人的「混血後代」，大多住在草原省份？',
+o:[['Métis','梅蒂人'],['Inuit','因紐特人'],['First Nations','第一民族'],['Acadians','阿卡迪亞人']],
+e:'mixed ancestry = 混血祖先 → Métis 梅蒂人。',k:[['ancestry','祖先、血統'],['mixed','混合的']]},
+{c:'people',t:'R',q:'Which people are **descendants** of French colonists who began settling in the Maritime provinces in 1604?',z:'哪一群人是 1604 年開始定居在濱海省份的法國殖民者「後代」？',
+o:[['Acadians','阿卡迪亞人'],['Québécois','魁北克人'],['Métis','梅蒂人'],['United Empire Loyalists','效忠派']],
+e:'Maritime（濱海省份）＋1604 → Acadians。',k:[['descendants','後代'],['colonists','殖民者']]},
+{c:'people',t:'F',q:'Among Aboriginal people in Canada, which group is the **largest**?',z:'在加拿大原住民中，哪一群「人數最多」？',
+o:[['First Nations','第一民族'],['Métis','梅蒂人'],['Inuit','因紐特人'],['They are all the same size','一樣多']],
+e:'約 65% 第一民族、30% 梅蒂人、4% 因紐特人。',k:[['largest','最大、最多']]},
+{c:'people',t:'S',q:'English and French have **equal status** in:',z:'英語和法語在哪裡享有「同等地位」？',
+o:[['Parliament and throughout the federal government','國會和整個聯邦政府'],['Quebec only','只有魁北克'],['Schools only','只有學校'],['The courts of Ontario only','只有安省法院']],
+e:'兩種官方語言在國會及整個聯邦政府地位平等。',k:[['equal status','同等地位']]},
+{c:'people',t:'F',q:'Which is Canada\'s **only officially bilingual** province?',z:'加拿大「唯一」的官方雙語省份是？',
+o:[['New Brunswick','新布倫瑞克省（紐賓士域）'],['Quebec','魁北克'],['Ontario','安大略'],['Manitoba','曼尼托巴']],
+e:'陷阱：很多人選魁北克，但魁北克官方語言只有法文。唯一官方雙語省 = New Brunswick。',k:[['bilingual','雙語的'],['only','唯一']]},
+{c:'people',t:'S',q:'The **majority** of French-speaking Canadians live in:',z:'「大部分」說法語的加拿大人住在：',
+o:[['Quebec','魁北克'],['New Brunswick','新布倫瑞克'],['Manitoba','曼尼托巴'],['Nova Scotia','新斯科舍']],
+e:'majority = 大多數。大部分法語人口在魁北克（Francophones = 說法語的人）。',k:[['majority','大多數'],['francophone','說法語的人']]},
+{c:'people',t:'R',q:'The "**Great Upheaval**" refers to:',z:'「大動盪（Great Upheaval）」指的是：',
+o:[['The deportation of the Acadians by the British (1755–1763)','英國驅逐阿卡迪亞人（1755–1763）'],['The Quiet Revolution in Quebec','魁北克的寧靜革命'],['The Klondike Gold Rush','克朗代克淘金潮'],['The Rebellions of 1837–38','1837–38 年叛亂']],
+e:'refers to = 指的是。Great Upheaval = 阿卡迪亞人被英國驅逐。',k:[['refers to','指的是'],['deportation','驅逐出境']]},
+{c:'people',t:'W',q:'Which statement about **residential schools** is **TRUE**?',z:'關於「寄宿學校」，哪一句是「正確」的？',
+o:[['They were set up to educate and assimilate Aboriginal children, and Ottawa formally apologized in 2008','目的是教育並同化原住民兒童，聯邦政府在 2008 年正式道歉'],['They were private universities for new immigrants','是給新移民讀的私立大學'],['Attendance was always voluntary','一直都是自願入學'],['They were run by the Inuit to teach French','由因紐特人開辦教法語']],
+e:'assimilate = 同化。寄宿學校讓原住民孩子離開家庭、禁止說母語，2008 年政府正式道歉。',k:[['assimilate','同化'],['formally apologized','正式道歉']]},
+
+// ===== 歷史 history =====
+{c:'history',t:'R',q:'In 1497, who was the **first** to draw a map of Canada\'s East Coast?',z:'1497 年，誰「第一個」畫出加拿大東岸的地圖？',
+o:[['John Cabot','約翰·卡博特'],['Jacques Cartier','雅克·卡蒂埃'],['Samuel de Champlain','尚普蘭'],['Henry Hudson','亨利·哈德遜']],
+e:'1497 + 地圖 = John Cabot（為英國航行的義大利人）。',k:[['coast','海岸']]},
+{c:'history',t:'R',q:'Between 1534 and 1542, who crossed the Atlantic three times and **claimed** the land for the King of France?',z:'1534 至 1542 年間，誰三次橫渡大西洋，並為法國國王「宣佈擁有」這片土地？',
+o:[['Jacques Cartier','雅克·卡蒂埃'],['John Cabot','約翰·卡博特'],['Pierre de Monts','皮埃爾·德蒙'],['James Wolfe','詹姆斯·沃爾夫']],
+e:'Cartier = 為法國探索聖羅倫斯河；Cabot = 為英國、1497、東岸地圖。',k:[['claimed','宣稱擁有']]},
+{c:'history',t:'S',q:'The name "Canada" is believed to come from "**kanata**", an Iroquoian word meaning:',z:'「Canada」據說來自易洛魁語「kanata」，意思是：',
+o:[['Village','村莊'],['Big land','大地'],['The people','人們'],['Our land','我們的土地']],
+e:'kanata = village 村莊。',k:[['Iroquoian','易洛魁語的']]},
+{c:'history',t:'R',q:'Who is known as the **founder** of Quebec City (1608)?',z:'誰被稱為魁北克市（1608 年）的「創建者」？',
+o:[['Samuel de Champlain','尚普蘭'],['Jacques Cartier','卡蒂埃'],['Louis-Joseph Papineau','帕皮諾'],['Count Frontenac','弗隆特納克伯爵']],
+e:'Champlain 1608 年建立魁北克城堡，被稱為「新法蘭西之父」。',k:[['founder','創建者']]},
+{c:'history',t:'W',q:'Which statement about the **Battle of the Plains of Abraham** (1759) is **TRUE**?',z:'關於「亞伯拉罕平原戰役」（1759），哪一句「正確」？',
+o:[['The British defeated the French at Quebec City, ending France\'s empire in America','英國在魁北克市擊敗法國，結束了法國在美洲的帝國'],['The French defeated the British and took Montreal','法國擊敗英國並攻下蒙特利爾'],['The United States invaded Canada','美國入侵加拿大'],['It was the last battle of the First World War','是一戰最後一場戰役']],
+e:'1759 英軍（Wolfe）打敗法軍（Montcalm），兩位將軍都戰死。',k:[['defeated','擊敗'],['empire','帝國']]},
+{c:'history',t:'R',q:'Which law of 1774 allowed **religious freedom for Catholics** and let them hold public office?',z:'哪一條 1774 年的法律讓「天主教徒有宗教自由」並可擔任公職？',
+o:[['The Quebec Act','魁北克法案'],['The Constitutional Act','憲法法案（1791）'],['The British North America Act','英屬北美法案'],['The Official Languages Act','官方語言法']],
+e:'Quebec Act 1774：天主教宗教自由、可任公職、恢復法國民法。',k:[['hold public office','擔任公職']]},
+{c:'history',t:'S',q:'The **United Empire Loyalists** were:',z:'「聯合帝國效忠派」是：',
+o:[['People who stayed loyal to the Crown and came to Canada from the American colonies after 1776','忠於英國王室、1776 年後從美洲殖民地移居加拿大的人'],['French soldiers who stayed after 1759','1759 年後留下的法國士兵'],['The first settlers of Nunavut','努納武特最早的居民'],['Members of the first Parliament in 1867','1867 年第一屆國會議員']],
+e:'loyal to the Crown = 忠於王室。美國獨立後，不想脫離英國的人搬到加拿大。',k:[['loyal','忠誠的'],['colonies','殖民地']]},
+{c:'history',t:'N',q:'Which of the following was **NOT** a result of the Constitutional Act of 1791?',z:'下列哪一項「不是」1791 年憲法法案的結果？',
+o:[['It created the Dominion of Canada','建立了加拿大自治領'],['It divided the Province of Quebec into Upper and Lower Canada','把魁北克省分成上加拿大和下加拿大'],['It gave both Canadas legislative assemblies elected by the people','給上、下加拿大各自的民選議會'],['It made the name "Canada" official','讓「Canada」成為正式名稱']],
+e:'加拿大自治領（Dominion of Canada）是 1867 年聯邦成立，不是 1791 年。',k:[['result','結果'],['divided','分割']]},
+{c:'history',t:'R',q:'**Upper Canada** later became which province?',z:'「上加拿大」後來成為哪一省？',
+o:[['Ontario','安大略'],['Quebec','魁北克'],['Manitoba','曼尼托巴'],['New Brunswick','新布倫瑞克']],
+e:'陷阱：Upper（上）＝ 安大略；Lower（下）＝ 魁北克。以聖羅倫斯河上下游區分，不是地圖的上下。',k:[['Upper','上（游）'],['Lower','下（游）']]},
+{c:'history',t:'F',q:'Which was the **first** province in the British Empire to move toward **abolishing slavery** (1793)?',z:'哪一個是大英帝國中「第一個」走向「廢除奴隸制」的省（1793）？',
+o:[['Upper Canada','上加拿大'],['Lower Canada','下加拿大'],['Nova Scotia','新斯科舍'],['Newfoundland','紐芬蘭']],
+e:'1793 年上加拿大副總督 John Graves Simcoe 推動，成為大英帝國第一個走向廢奴的省。',k:[['abolish','廢除'],['slavery','奴隸制']]},
+{c:'history',t:'S',q:'The **Underground Railroad** was:',z:'「地下鐵路」是：',
+o:[['A network that helped slaves escape from the United States to freedom in Canada','幫助奴隸從美國逃到加拿大獲得自由的秘密網絡'],['Canada\'s first subway line','加拿大第一條地鐵'],['A railway built under the Rocky Mountains','在洛磯山下建的鐵路'],['The coal mines of Nova Scotia','新斯科舍的煤礦']],
+e:'陷阱：字面是地下鐵路，其實不是鐵路，是幫助逃奴的秘密網絡。',k:[['network','網絡'],['escape','逃跑']]},
+{c:'history',t:'R',q:'Which company, founded in 1670, was given control of the **fur trade** north and west of the Great Lakes?',z:'哪家成立於 1670 年的公司，掌控了五大湖北部和西部的「毛皮貿易」？',
+o:[['Hudson\'s Bay Company','哈德遜灣公司'],['Canadian Pacific Railway','加拿大太平洋鐵路'],['North West Mounted Police','西北騎警'],['Bank of Montreal','蒙特利爾銀行']],
+e:'1670 + fur trade = Hudson\'s Bay Company。',k:[['fur trade','毛皮貿易']]},
+{c:'history',t:'W',q:'Which statement about the **War of 1812** is **TRUE**?',z:'關於「1812 年戰爭」，哪一句「正確」？',
+o:[['The United States invaded Canada and was defeated','美國入侵加拿大並被擊敗'],['Canada invaded the United States and captured Boston','加拿大入侵美國並攻下波士頓'],['France invaded Canada to take back Quebec','法國入侵加拿大想奪回魁北克'],['It ended with Canada joining the United States','結果加拿大加入美國']],
+e:'美國入侵，被英軍、加拿大民兵和原住民擊退，確保加拿大不會併入美國。',k:[['invaded','入侵']]},
+{c:'history',t:'R',q:'In 1813, who walked about 30 km to **warn** Lieutenant James FitzGibbon of an American attack?',z:'1813 年，誰走了約 30 公里去「警告」FitzGibbon 中尉美軍要攻擊？',
+o:[['Laura Secord','蘿拉·席科德'],['Isaac Brock','艾薩克·布洛克'],['Tecumseh','特庫姆塞'],['Emily Stowe','艾蜜莉·斯托']],
+e:'走 30 公里報信 = Laura Secord（女性）。',k:[['warn','警告']]},
+{c:'history',t:'R',q:'Who led the capture of Detroit in 1812 but was **killed** at the Battle of Queenston Heights?',z:'誰在 1812 年攻下底特律，但在昆士頓高地戰役「陣亡」？',
+o:[['Major-General Sir Isaac Brock','布洛克少將'],['Tecumseh','特庫姆塞'],['Charles de Salaberry','德薩拉伯里'],['Sir John A. Macdonald','麥克唐納']],
+e:'Brock = 攻下底特律、戰死於昆士頓高地。Tecumseh 是協助防衛的肖尼族酋長。',k:[['capture','攻佔'],['killed','陣亡']]},
+{c:'history',t:'W',q:'Why did reformers in Upper and Lower Canada **rebel** in 1837–38?',z:'1837–38 年上、下加拿大的改革者為什麼「起義」？',
+o:[['They wanted responsible government / more democracy','他們想要責任政府（更民主）'],['They wanted to join the United States','想加入美國'],['They wanted to end the fur trade','想結束毛皮貿易'],['They wanted to restore French rule','想恢復法國統治']],
+e:'rebel = 起義。改革者認為民主進展太慢，要求責任政府。',k:[['rebel','起義、反叛'],['reformers','改革者']]},
+{c:'history',t:'S',q:'"**Responsible government**" means that:',z:'「責任政府」的意思是：',
+o:[['Ministers of the Crown must have the support of a majority of the elected representatives to govern','內閣部長必須得到多數民選議員支持才能執政'],['Citizens are responsible for paying taxes','公民有責任繳稅'],['The King makes all laws personally','國王親自制定所有法律'],['Each province governs itself without a federal government','各省自治，沒有聯邦政府']],
+e:'題目沒問「誰」，而是問定義。重點：政府要有民選議會多數支持。',k:[['majority','多數'],['elected representatives','民選代表']]},
+{c:'history',t:'F',q:'Which British North American colony was the **FIRST** to achieve full responsible government (1847–48)?',z:'哪個英屬北美殖民地「第一個」實現完全責任政府（1847–48）？',
+o:[['Nova Scotia','新斯科舍'],['Upper Canada','上加拿大'],['Lower Canada','下加拿大'],['British Columbia','卑詩']],
+e:'第一個 = Nova Scotia。1849 年聯合加拿大的第一位責任政府領袖是 La Fontaine。兩題容易混在一起。',k:[['achieve','達成'],['colony','殖民地']]},
+{c:'history',t:'R',q:'Who was the **first head** of a responsible government in the Canadas, in 1849?',z:'1849 年，誰是加拿大（聯合省）責任政府的「第一位領袖」？',
+o:[['Sir Louis-Hippolyte La Fontaine','拉方丹爵士'],['Sir John A. Macdonald','麥克唐納'],['Joseph Howe','約瑟夫·豪'],['Lord Durham','德罕勳爵']],
+e:'La Fontaine，民主與法語權利的捍衛者。',k:[['head','領袖、首長']]},
+{c:'history',t:'R',q:'What happened on **July 1, 1867**?',z:'「1867 年 7 月 1 日」發生了什麼事？',
+o:[['The Dominion of Canada was created (Confederation)','加拿大自治領成立（聯邦）'],['The Charter of Rights and Freedoms was signed','權利與自由憲章簽署'],['Women won the right to vote','婦女獲得投票權'],['Newfoundland joined Canada','紐芬蘭加入加拿大']],
+e:'反問題：題目給日期，問事件。1867 = 聯邦成立；1982 = 憲章。',k:[['Confederation','聯邦']]},
+{c:'history',t:'N',q:'Which province was **NOT** one of the four original provinces in 1867?',z:'哪一省「不是」1867 年最初的四個省之一？',
+o:[['Manitoba','曼尼托巴'],['Ontario','安大略'],['Quebec','魁北克'],['Nova Scotia','新斯科舍']],
+e:'原始四省：安大略、魁北克、新斯科舍、新布倫瑞克。曼尼托巴 1870 年才加入。',k:[['original','最初的']]},
+{c:'history',t:'S',q:'The "**Fathers of Confederation**" were:',z:'「聯邦之父」是：',
+o:[['Representatives who worked together from 1864 to 1867 to establish Canada','1864–1867 年共同努力建立加拿大的代表們'],['The first Governors General','最早的總督們'],['French explorers of the 1600s','1600 年代的法國探險家'],['Soldiers who fought at Vimy Ridge','在維米嶺作戰的士兵']],
+e:'Fathers of Confederation 是一群建立加拿大的代表，不是真的「爸爸」。',k:[['representatives','代表'],['establish','建立']]},
+{c:'history',t:'R',q:'Sir John A. Macdonald is best known as:',z:'約翰·A·麥克唐納爵士最為人所知的身份是：',
+o:[['Canada\'s first Prime Minister','加拿大第一任總理'],['Canada\'s first Governor General','第一任總督'],['Leader of the Métis uprising','梅蒂人起義領袖'],['The founder of Quebec City','魁北克市創建者']],
+e:'他的肖像在 10 元紙鈔上，生日 1 月 11 日為 Sir John A. Macdonald Day。',k:[['best known as','最為人知的是']]},
+{c:'history',t:'F',q:'Who was the **first French-Canadian** Prime Minister after Confederation?',z:'聯邦成立後，誰是「第一位法裔加拿大人」總理？',
+o:[['Sir Wilfrid Laurier','勞雷爾爵士'],['Sir George-Étienne Cartier','卡蒂埃爵士'],['Sir Louis-Hippolyte La Fontaine','拉方丹爵士'],['Louis Riel','路易·瑞爾']],
+e:'Laurier，肖像在 5 元紙鈔。注意 George-Étienne Cartier 是聯邦之父，不是總理。',k:[['French-Canadian','法裔加拿大人']]},
+{c:'history',t:'S',q:'What was "**Dominion Day**" renamed?',z:'「自治領日」後來改名為什麼？',
+o:[['Canada Day','加拿大國慶日'],['Victoria Day','維多利亞日'],['Remembrance Day','國殤紀念日'],['Thanksgiving','感恩節']],
+e:'7 月 1 日原稱 Dominion Day，1982 年改名 Canada Day。',k:[['renamed','改名']]},
+{c:'history',t:'R',q:'Which province joined Confederation (1870) as a result of the first Métis uprising led by **Louis Riel**?',z:'哪一省因為 Louis Riel 領導的第一次梅蒂人起義，而加入聯邦（1870）？',
+o:[['Manitoba','曼尼托巴'],['Saskatchewan','薩斯喀徹溫'],['Alberta','亞伯達'],['British Columbia','卑詩']],
+e:'Red River 起義 → 1870 年曼尼托巴建省。',k:[['uprising','起義'],['as a result of','由於']]},
+{c:'history',t:'R',q:'What was created in 1873 to **keep the peace** in the West and negotiate with First Nations?',z:'1873 年成立什麼，用來在西部「維持治安」並與第一民族談判？',
+o:[['The North West Mounted Police (forerunner of the RCMP)','西北騎警（皇家騎警的前身）'],['The Canadian Army','加拿大陸軍'],['The Hudson\'s Bay Company','哈德遜灣公司'],['The Supreme Court','最高法院']],
+e:'forerunner = 前身。NWMP → 今天的 RCMP。',k:[['forerunner','前身'],['keep the peace','維持治安']]},
+{c:'history',t:'C',q:'British Columbia agreed to join Confederation in 1871 **because** Ottawa promised to:',z:'卑詩在 1871 年同意加入聯邦，「是因為」渥太華承諾要：',
+o:[['Build a railway to the West Coast','建一條通到西岸的鐵路'],['Make Vancouver the capital','讓溫哥華當首都'],['Remove all taxes in B.C.','取消卑詩所有稅收'],['Give B.C. its own army','給卑詩自己的軍隊']],
+e:'承諾建橫貫鐵路 → Canadian Pacific Railway，1885 年完工（Last Spike）。',k:[['promised','承諾'],['railway','鐵路']]},
+{c:'history',t:'W',q:'Which statement about **Chinese workers** and the Canadian Pacific Railway is **TRUE**?',z:'關於「華工」與加拿大太平洋鐵路，哪一句「正確」？',
+o:[['They helped build the railway; afterwards Ottawa imposed a head tax on Chinese immigrants','他們協助建造鐵路；之後政府對華人移民徵收人頭稅'],['They were not allowed to work on the railway','他們不被允許參與建造'],['They were paid more than all other workers','他們工資比其他工人都高'],['They owned the railway company','他們擁有鐵路公司']],
+e:'華工對鐵路貢獻很大，之後卻被徵人頭稅。政府在 2006 年道歉。',k:[['head tax','人頭稅'],['imposed','徵收、強加']]},
+{c:'history',t:'S',q:'Canadian soldiers\' victory at **Vimy Ridge** in April 1917 is remembered because:',z:'1917 年 4 月加拿大士兵在「維米嶺」勝利被紀念，是因為：',
+o:[['Their courage and sacrifice helped earn Canada its place as a nation','他們的勇氣與犧牲讓加拿大贏得國家的地位'],['It ended the Second World War','結束了二戰'],['It was fought against the United States','是對抗美國的戰役'],['No Canadians were killed','沒有加拿大人陣亡']],
+e:'維米嶺戰役（一戰）約 10,500 人死傷，常說「加拿大在維米嶺成為一個國家」。',k:[['courage','勇氣'],['sacrifice','犧牲']]},
+{c:'history',t:'R',q:'Why do Canadians wear a **red poppy** on November 11?',z:'加拿大人為什麼在 11 月 11 日戴「紅色罌粟花」？',
+o:[['To remember the sacrifice of those who served and died for Canada','紀念為加拿大服役與犧牲的人'],['To celebrate the harvest','慶祝豐收'],['To mark the King\'s birthday','慶祝國王生日'],['To celebrate Confederation','慶祝聯邦成立']],
+e:'Remembrance Day（國殤日），1918 年 11 月 11 日一戰停戰。',k:[['poppy','罌粟花'],['remember','紀念']]},
+{c:'history',t:'R',q:'The poem "**In Flanders Fields**" was written by:',z:'詩作《在法蘭德斯戰場》的作者是：',
+o:[['Lieutenant Colonel John McCrae','約翰·麥克雷中校'],['Sir Arthur Currie','亞瑟·柯里爵士'],['Sir Isaac Brock','布洛克爵士'],['Agnes Macphail','艾格妮絲·麥克菲爾']],
+e:'John McCrae，軍醫，1915 年寫下此詩，至今在國殤日朗誦。',k:[['poem','詩']]},
+{c:'history',t:'F',q:'Which was the **FIRST province** to give women the right to vote (1916)?',z:'哪一省「第一個」給予女性投票權（1916）？',
+o:[['Manitoba','曼尼托巴'],['Ontario','安大略'],['Quebec','魁北克'],['Nova Scotia','新斯科舍']],
+e:'陷阱：題目問「第一個省」，不是聯邦。曼尼托巴 1916；聯邦 1917–1918；魁北克最晚（1940）。',k:[['right to vote','投票權']]},
+{c:'history',t:'F',q:'Who was the **first woman** elected to the House of Commons (1921)?',z:'誰是「第一位」當選下議院議員的女性（1921）？',
+o:[['Agnes Macphail','艾格妮絲·麥克菲爾'],['Emily Stowe','艾蜜莉·斯托'],['Laura Secord','蘿拉·席科德'],['Thérèse Casgrain','卡斯格蘭']],
+e:'Agnes Macphail = 第一位女議員；Emily Stowe = 第一位在加拿大行醫的女性。',k:[['elected','當選']]},
+{c:'history',t:'R',q:'On **D-Day**, June 6, 1944, Canadian soldiers captured which beach?',z:'1944 年 6 月 6 日「諾曼第登陸日」，加拿大士兵攻下哪個海灘？',
+o:[['Juno Beach','朱諾海灘'],['Omaha Beach','奧馬哈海灘'],['Gold Beach','黃金海灘'],['Utah Beach','猶他海灘']],
+e:'Juno Beach。',k:[['captured','攻下']]},
+{c:'history',t:'R',q:'The people of which country still **thank** Canada every year for helping to **liberate** them in 1944–45?',z:'哪個國家的人民至今每年「感謝」加拿大在 1944–45 年幫他們「解放」？',
+o:[['The Netherlands','荷蘭'],['France','法國'],['Italy','義大利'],['Belgium','比利時']],
+e:'荷蘭每年送鬱金香到渥太華致謝。',k:[['liberate','解放']]},
+{c:'history',t:'S',q:'The period of rapid change in **Quebec** in the 1960s is known as:',z:'1960 年代「魁北克」快速變革的時期被稱為：',
+o:[['The Quiet Revolution','寧靜革命'],['The Great Upheaval','大動盪'],['The Red River Rebellion','紅河起義'],['Confederation','聯邦']],
+e:'Quiet Revolution = 寧靜革命。',k:[['rapid','快速的']]},
+{c:'history',t:'R',q:'In what year did Canada **become a country** (Confederation)?',z:'加拿大在哪一年「成為一個國家」（聯邦成立）？',
+o:[['1867','1867'],['1982','1982'],['1759','1759'],['1931','1931']],
+e:'最常搞混：1867 聯邦成立；1982 憲法修改＋憲章；1759 亞伯拉罕平原戰役。',k:[['become a country','成為國家']]},
+{c:'history',t:'S',q:'In **1982**, what happened to Canada\'s Constitution?',z:'「1982 年」，加拿大憲法發生了什麼事？',
+o:[['It was amended so it could be changed without British approval, and the Charter was added','修改為不需英國批准即可修改，並加入憲章'],['Canada became a country for the first time','加拿大首次成為國家'],['The Constitution was cancelled','憲法被廢除'],['Quebec left Confederation','魁北克退出聯邦']],
+e:'amended = 修改。1982 年憲法「回歸」並加入權利與自由憲章。',k:[['amended','修改'],['approval','批准']]},
+];
+
+const Q2 = [
+// ===== 現代加拿大 modern =====
+{c:'modern',t:'R',q:'**Terry Fox** is remembered for:',z:'泰瑞·福克斯被紀念是因為：',
+o:[['His "Marathon of Hope" run across Canada to raise money for cancer research','他橫跨加拿大的「希望馬拉松」，為癌症研究募款'],['Inventing basketball','發明籃球'],['Discovering insulin','發現胰島素'],['Being the first woman in Parliament','第一位女性國會議員']],
+e:'1980 年因癌症失去一條腿，仍跑步為癌症研究募款。',k:[['raise money','募款'],['cancer research','癌症研究']]},
+{c:'modern',t:'N',q:'What is Canada\'s official **SUMMER** sport?',z:'加拿大官方的「夏季」運動是什麼？',
+o:[['Lacrosse','袋棍球（長曲棍球）'],['Hockey','冰球'],['Canadian football','加式足球'],['Baseball','棒球']],
+e:'陷阱：冰球是「冬季」國家運動；袋棍球是「夏季」官方運動。看清楚 SUMMER 或 WINTER。',k:[['official','官方的'],['summer','夏季']]},
+{c:'modern',t:'R',q:'Which trophy is awarded to the champion of **Canadian football**?',z:'哪一座獎盃頒給「加式足球」冠軍？',
+o:[['The Grey Cup','格雷杯'],['The Stanley Cup','史丹利杯'],['The Victoria Cross','維多利亞十字勳章'],['The Memorial Cup','紀念杯']],
+e:'Grey Cup（Lord Grey 捐贈）= 足球；Stanley Cup（Lord Stanley 捐贈）= 冰球。兩人都是總督。',k:[['trophy','獎盃'],['champion','冠軍']]},
+{c:'modern',t:'S',q:'The **Stanley Cup** was donated by:',z:'史丹利杯是由誰捐贈的？',
+o:[['Lord Stanley, a Governor General, in 1892','1892 年總督 Stanley 勳爵'],['Sir John A. Macdonald','麥克唐納'],['A hockey team from Montreal','蒙特利爾的冰球隊'],['Queen Victoria','維多利亞女王']],
+e:'donated = 捐贈。Stanley 勳爵是總督。',k:[['donated','捐贈']]},
+{c:'modern',t:'R',q:'Which sport was **invented** by Canadian James Naismith in 1891?',z:'哪一項運動是加拿大人 James Naismith 在 1891 年「發明」的？',
+o:[['Basketball','籃球'],['Hockey','冰球'],['Lacrosse','袋棍球'],['Curling','冰壺']],
+e:'Naismith 發明籃球。',k:[['invented','發明']]},
+{c:'modern',t:'R',q:'**Sir Frederick Banting and Charles Best** are known for:',z:'班廷爵士與貝斯特以什麼聞名？',
+o:[['Discovering insulin to treat diabetes','發現治療糖尿病的胰島素'],['Inventing the telephone','發明電話'],['Inventing the snowmobile','發明雪地摩托車'],['Building the first railway','建造第一條鐵路']],
+e:'insulin = 胰島素。電話是 Alexander Graham Bell；雪地摩托車是 Bombardier。',k:[['insulin','胰島素'],['diabetes','糖尿病']]},
+{c:'modern',t:'R',q:'Which famous invention is linked to **Alexander Graham Bell**?',z:'哪項著名發明與「貝爾」有關？',
+o:[['The telephone','電話'],['The snowmobile','雪地摩托車'],['The electric light bulb','電燈泡'],['The pacemaker','心律調節器']],
+e:'Bell 在安大略 Brantford 構想出電話。',k:[['linked to','與……有關']]},
+
+// ===== 政府 gov =====
+{c:'gov',t:'S',q:'Canada\'s system of government is **BEST** described as:',z:'加拿大的政府制度「最好」的描述是：',
+o:[['A federal state, a parliamentary democracy and a constitutional monarchy','聯邦制國家、議會民主、君主立憲'],['A republic led by an elected president','由民選總統領導的共和國'],['An absolute monarchy','絕對君主制'],['A single government with no provinces','沒有省份的單一政府']],
+e:'三個關鍵字：federal state、parliamentary democracy、constitutional monarchy。',k:[['constitutional monarchy','君主立憲'],['federal state','聯邦國家']]},
+{c:'gov',t:'S',q:'Who is Canada\'s **Head of State**?',z:'誰是加拿大的「國家元首」？',
+o:[['The Sovereign (the King)','君主（國王）'],['The Prime Minister','總理'],['The Governor General','總督'],['The Chief Justice','首席大法官']],
+e:'最大陷阱！Head of State（國家元首）= 國王；Head of Government（政府首腦）= 總理。',k:[['Head of State','國家元首'],['Sovereign','君主']]},
+{c:'gov',t:'S',q:'Who is the **Head of Government** in Canada?',z:'誰是加拿大的「政府首腦」？',
+o:[['The Prime Minister','總理'],['The Sovereign','君主'],['The Governor General','總督'],['The Speaker of the House','下議院議長']],
+e:'Head of Government = 總理（Prime Minister）。',k:[['Head of Government','政府首腦']]},
+{c:'gov',t:'S',q:'Who **represents the Sovereign** in Canada at the federal level?',z:'在聯邦層級，誰「代表君主」？',
+o:[['The Governor General','總督'],['The Prime Minister','總理'],['The Lieutenant Governor','省督'],['The Premier','省長']],
+e:'聯邦 = Governor General（總督）；省 = Lieutenant Governor（省督）。2026 年 6 月起的總督是 Louise Arbour（第 31 任）。',k:[['represents','代表']]},
+{c:'gov',t:'S',q:'In each province, the Sovereign is represented by the:',z:'在每個省，君主由誰代表？',
+o:[['Lieutenant Governor','省督'],['Premier','省長'],['Governor General','總督'],['Mayor','市長']],
+e:'Lieutenant Governor（省督）由總督依總理建議任命。不要和 Premier（省長）搞混。',k:[['Lieutenant Governor','省督']]},
+{c:'gov',t:'S',q:'The leader of a **provincial** government is called the:',z:'「省政府」的領導人稱為：',
+o:[['Premier','省長'],['Prime Minister','總理'],['Lieutenant Governor','省督'],['Governor General','總督']],
+e:'Premier = 省長（民選政黨領袖）；Prime Minister = 聯邦總理。',k:[['provincial','省的']]},
+{c:'gov',t:'N',q:'Which of the following is **NOT** one of the three parts of Parliament?',z:'下列哪一個「不是」國會的三個組成部分之一？',
+o:[['The Supreme Court of Canada','加拿大最高法院'],['The Sovereign','君主'],['The Senate','參議院'],['The House of Commons','下議院']],
+e:'國會 = 君主 + 參議院 + 下議院。法院屬於司法，不是國會。',k:[['parts','部分'],['Parliament','國會']]},
+{c:'gov',t:'S',q:'**Senators** are:',z:'「參議員」是：',
+o:[['Appointed by the Governor General on the advice of the Prime Minister, and serve until age 75','由總督依總理建議任命，任職到 75 歲'],['Elected by the people every four years','每四年由人民選出'],['Appointed for life by the King','由國王終身任命'],['Chosen by the provincial premiers','由各省省長選出']],
+e:'陷阱：參議員不是選出來的，是「任命」的，做到 75 歲。',k:[['appointed','任命'],['on the advice of','依照……的建議']]},
+{c:'gov',t:'S',q:'**Members of Parliament (MPs)** are:',z:'「國會議員（MP）」是：',
+o:[['Elected by the people to sit in the House of Commons','由人民選出，坐在下議院'],['Appointed by the Prime Minister','由總理任命'],['Appointed by the Governor General until age 75','由總督任命到 75 歲'],['Chosen by the Senate','由參議院選出']],
+e:'MP 選出來的；Senator 任命的。',k:[['elected','選出']]},
+{c:'gov',t:'S',q:'What is the **final step** before a bill becomes law?',z:'法案成為法律前的「最後一步」是什麼？',
+o:[['Royal Assent, granted by the Governor General','由總督給予御准（Royal Assent）'],['A vote by all citizens','全體公民投票'],['Approval by the Supreme Court','最高法院批准'],['Signature by every premier','每位省長簽名']],
+e:'bill = 法案。兩院通過後，總督代表君主給 Royal Assent 才成為法律。',k:[['bill','法案'],['Royal Assent','御准']]},
+{c:'gov',t:'N',q:'Which of the following is a **PROVINCIAL** responsibility?',z:'下列哪一項是「省政府」的職責？',
+o:[['Education','教育'],['National defence','國防'],['Currency','貨幣'],['Citizenship','公民身份']],
+e:'省：教育、醫療、天然資源、公路、財產與民權。聯邦：國防、外交、貨幣、刑法、公民身份。',k:[['defence','國防'],['currency','貨幣']]},
+{c:'gov',t:'N',q:'Which of the following is **NOT** a federal responsibility?',z:'下列哪一項「不是」聯邦政府的職責？',
+o:[['Highways','公路'],['National defence','國防'],['Foreign policy','外交政策'],['Criminal law','刑法']],
+e:'公路是省的；國防、外交、刑法是聯邦的。',k:[['federal','聯邦的'],['foreign policy','外交政策']]},
+{c:'gov',t:'S',q:'Which areas are **shared** by the federal and provincial governments?',z:'哪些領域由聯邦和省「共同」負責？',
+o:[['Agriculture and immigration','農業和移民'],['Defence and currency','國防和貨幣'],['Education and highways','教育和公路'],['Snow removal and recycling','除雪和回收']],
+e:'shared = 共享。聯邦與省共同負責：農業、移民。',k:[['shared','共同的']]},
+{c:'gov',t:'C',q:'You want to complain about **snow removal and garbage collection** on your street. Which level of government is responsible?',z:'你想投訴街上的「除雪和垃圾收集」，該找哪一級政府？',
+o:[['Municipal (local) government','市政府'],['Federal government','聯邦政府'],['Provincial government','省政府'],['The Senate','參議院']],
+e:'市政府負責：除雪、回收、垃圾、地方警察、消防、公共交通等。',k:[['municipal','市政的'],['snow removal','除雪']]},
+{c:'gov',t:'S',q:'The **Cabinet** is made up of:',z:'「內閣」由誰組成？',
+o:[['Ministers chosen by the Prime Minister, mostly from among MPs','總理挑選的部長，大多是國會議員'],['All senators','所有參議員'],['Provincial premiers','各省省長'],['Supreme Court judges','最高法院法官']],
+e:'Cabinet ministers 由總理挑選。',k:[['Cabinet','內閣'],['ministers','部長']]},
+{c:'gov',t:'C',q:'If the government **loses a confidence vote** in the House of Commons, what usually happens?',z:'如果政府在下議院「失去信任投票」，通常會怎樣？',
+o:[['The Prime Minister asks the Governor General to call an election','總理請總督宣佈選舉'],['The Senate takes over the government','參議院接管政府'],['The King chooses a new Prime Minister himself','國王自己挑新總理'],['Nothing changes until the next fixed date','什麼都不變，等到固定選舉日']],
+e:'失去多數支持 → 通常舉行選舉。',k:[['confidence vote','信任投票']]},
+{c:'gov',t:'S',q:'Which party usually forms the **Official Opposition**?',z:'哪一個政黨通常成為「官方反對黨」？',
+o:[['The party with the second-most seats in the House of Commons','下議院席次第二多的政黨'],['The party with the fewest seats','席次最少的政黨'],['The party chosen by the Senate','參議院選的政黨'],['All parties except the governing party, together','除執政黨外所有政黨合起來']],
+e:'second-most = 第二多。',k:[['Official Opposition','官方反對黨'],['seats','席次']]},
+{c:'gov',t:'S',q:'When the party in power holds **LESS** than half of the seats in the House of Commons, it is called a:',z:'當執政黨在下議院的席次「少於」一半，稱為：',
+o:[['Minority government','少數政府'],['Majority government','多數政府'],['Official Opposition','官方反對黨'],['Coalition senate','聯合參議院']],
+e:'less than half = 少於一半 → minority（少數）。',k:[['less than half','少於一半'],['minority','少數']]},
+
+// ===== 選舉 vote =====
+{c:'vote',t:'S',q:'Federal elections must be held:',z:'聯邦選舉必須在何時舉行？',
+o:[['On the third Monday in October every four years after the last general election','上次大選後每四年的十月第三個星期一'],['Every two years on July 1','每兩年的 7 月 1 日'],['Whenever the Senate decides','參議院決定時'],['Every five years on Remembrance Day','每五年的國殤日']],
+e:'Discover Canada：每四年的十月第三個星期一（但政府倒閣時會提早）。',k:[['held','舉行']]},
+{c:'vote',t:'C',q:'Your employer asks you **how you voted**. Which is **TRUE**?',z:'你的老闆問你「投給誰」。哪一句「正確」？',
+o:[['You do not have to tell anyone; the law protects your secret ballot','你不必告訴任何人，法律保護秘密投票'],['You must tell your employer','你必須告訴老闆'],['You must tell only the police','你只需告訴警察'],['Your vote is published online','你的選票會在網上公佈']],
+e:'secret ballot = 秘密投票。',k:[['secret ballot','秘密投票']]},
+{c:'vote',t:'S',q:'An **electoral district** is also called a:',z:'「選區」也叫做：',
+o:[['Riding (or constituency)','Riding（選區）'],['Province','省'],['Municipality','市鎮'],['Territory','地區']],
+e:'riding = 選區，每個選區選一位 MP。',k:[['electoral district','選區'],['riding','選區（口語）']]},
+{c:'vote',t:'C',q:'Election day is coming, but you did **NOT** receive a voter information card. What should you do?',z:'選舉快到了，你「沒有」收到選民資訊卡，該怎麼辦？',
+o:[['Contact Elections Canada / your local elections office','聯絡加拿大選舉局或本地選舉辦公室'],['You cannot vote in this election','你不能在這次選舉投票'],['Ask your MP to vote for you','請你的議員代你投票'],['Wait until the next election','等下次選舉']],
+e:'沒收到卡不代表不能投票，聯絡選舉局確認登記即可。',k:[['voter information card','選民資訊卡']]},
+{c:'vote',t:'S',q:'A candidate who does **not belong to a political party** runs as an:',z:'「不屬於任何政黨」的候選人稱為：',
+o:[['Independent','獨立候選人'],['Opposition member','反對黨議員'],['Senator','參議員'],['Minister','部長']],
+e:'independent = 獨立（無黨籍）。',k:[['candidate','候選人'],['independent','無黨籍']]},
+
+// ===== 司法 justice =====
+{c:'justice',t:'S',q:'In Canada, a person **accused of a crime** is considered:',z:'在加拿大，「被控犯罪」的人被視為：',
+o:[['Innocent until proven guilty','在證明有罪前是無罪的'],['Guilty until proven innocent','在證明無罪前是有罪的'],['Guilty if arrested by the police','被警察逮捕就有罪'],['Innocent only if a lawyer is paid','付錢請律師才算無罪']],
+e:'presumption of innocence = 無罪推定。',k:[['accused','被控告的'],['guilty','有罪的']]},
+{c:'justice',t:'S',q:'"**Due process**" means that:',z:'「正當程序」的意思是：',
+o:[['The government must respect all the legal rights a person is entitled to under the law','政府必須尊重每個人依法享有的所有權利'],['Court cases must finish within one week','案件必須一週內結束'],['Only citizens can go to court','只有公民可以上法院'],['Police may skip the courts','警察可以跳過法院']],
+e:'due process = 正當法律程序。',k:[['due process','正當程序'],['entitled to','有權享有']]},
+{c:'justice',t:'F',q:'Which is the **HIGHEST** court in Canada?',z:'加拿大「最高」的法院是？',
+o:[['The Supreme Court of Canada','加拿大最高法院'],['The Federal Court','聯邦法院'],['The Provincial Court','省法院'],['The Court of Appeal','上訴法院']],
+e:'Supreme Court of Canada 是最終上訴法院。',k:[['highest','最高的']]},
+{c:'justice',t:'C',q:'You have a legal problem but **cannot afford** a lawyer. What can you do?',z:'你遇到法律問題但「請不起」律師，可以怎麼做？',
+o:[['Use legal aid services, which are free or low-cost','使用免費或低收費的法律援助'],['Nothing; only people with money can go to court','沒辦法，只有有錢人能上法院'],['Ask the judge to be your lawyer','請法官當你的律師'],['Ask your MP to decide the case','請議員判決']],
+e:'afford = 負擔得起。legal aid = 法律援助。',k:[['afford','負擔得起'],['legal aid','法律援助']]},
+{c:'justice',t:'N',q:'The RCMP acts as the provincial police in all provinces **EXCEPT**:',z:'皇家騎警在所有省份擔任省警察，「除了」：',
+o:[['Ontario and Quebec','安大略和魁北克'],['Alberta and Manitoba','亞伯達和曼尼托巴'],['British Columbia and Nova Scotia','卑詩和新斯科舍'],['New Brunswick and PEI','新布倫瑞克和愛德華王子島']],
+e:'安大略有 OPP、魁北克有 Sûreté du Québec，所以 RCMP 在這兩省不當省警。',k:[['acts as','擔任'],['EXCEPT','除了']]},
+{c:'justice',t:'C',q:'A police officer treated you unfairly. What can you do?',z:'警察對你不公平，你可以怎麼做？',
+o:[['Make a complaint to the police organization or oversight body','向警察機構或監督單位投訴'],['Nothing — you can never question police','什麼都不能做，不能質疑警察'],['Refuse to obey any laws','拒絕遵守所有法律'],['Ask your employer to fire the officer','請你的老闆開除警察']],
+e:'警察也要守法，可以投訴。',k:[['complaint','投訴'],['unfairly','不公平地']]},
+
+// ===== 象徵 symbols =====
+{c:'symbols',t:'R',q:'Canada\'s current red-and-white **maple leaf flag** was raised for the first time in:',z:'加拿大現在的紅白「楓葉旗」第一次升起是在：',
+o:[['1965','1965'],['1867','1867'],['1982','1982'],['1921','1921']],
+e:'楓葉旗 1965 年。1921 年是紅白被定為國家顏色。',k:[['raised','升起']]},
+{c:'symbols',t:'S',q:'Canada\'s motto "**A Mari Usque Ad Mare**" means:',z:'加拿大的格言「A Mari Usque Ad Mare」意思是：',
+o:[['From sea to sea','從海到海'],['True north strong and free','真正的北方，強大又自由'],['Peace, order and good government','和平、秩序與良好政府'],['Our home and native land','我們的家園與故土']],
+e:'拉丁文，from sea to sea。',k:[['motto','格言']]},
+{c:'symbols',t:'R',q:'Which animal is an official symbol of Canada and appears on the **5-cent coin**?',z:'哪種動物是加拿大官方象徵，並印在「5 分硬幣」上？',
+o:[['The beaver','河狸'],['The loon','潛鳥'],['The caribou','馴鹿'],['The polar bear','北極熊']],
+e:'5 分 = beaver（河狸）；1 元 = loon（潛鳥，loonie）；25 分 = 馴鹿。',k:[['beaver','河狸'],['coin','硬幣']]},
+{c:'symbols',t:'S',q:'What is Canada\'s **ROYAL** anthem?',z:'加拿大的「皇家」頌歌是什麼？',
+o:[['God Save the King','天佑吾王'],['O Canada','啊，加拿大'],['The Maple Leaf Forever','楓葉萬歲'],['In Flanders Fields','在法蘭德斯戰場']],
+e:'陷阱：National anthem（國歌）= O Canada；Royal anthem（皇家頌歌）= God Save the King。',k:[['royal','皇家的'],['anthem','頌歌、國歌']]},
+{c:'symbols',t:'R',q:'The **fleur-de-lys** appears on the flag of which province?',z:'「鳶尾花（fleur-de-lys）」出現在哪一省的旗幟上？',
+o:[['Quebec','魁北克'],['New Brunswick','新布倫瑞克'],['Nova Scotia','新斯科舍'],['Manitoba','曼尼托巴']],
+e:'fleur-de-lys 來自法國王室，魁北克省旗。',k:[['appears','出現']]},
+{c:'symbols',t:'S',q:'In Canada, **the Crown** is a symbol of:',z:'在加拿大，「王冠」象徵：',
+o:[['Government, including Parliament, the legislatures, the courts, police services and the Armed Forces','政府，包括國會、議會、法院、警察和軍隊'],['The Hudson\'s Bay Company','哈德遜灣公司'],['Hockey champions','冰球冠軍'],['The Catholic Church','天主教會']],
+e:'the Crown = 國家權力的象徵。',k:[['Crown','王冠、王室']]},
+{c:'symbols',t:'R',q:'The **Peace Tower** on Parliament Hill was completed in memory of:',z:'國會山莊的「和平塔」是為了紀念：',
+o:[['The First World War','第一次世界大戰'],['Confederation','聯邦成立'],['The War of 1812','1812 年戰爭'],['The Korean War','韓戰']],
+e:'Peace Tower 紀念一戰，內有 Memorial Chamber 和陣亡者名冊。',k:[['in memory of','紀念']]},
+{c:'symbols',t:'F',q:'What is the **highest honour** available to Canadians, awarded for the most conspicuous bravery?',z:'加拿大人能獲得的「最高榮譽」、頒給最顯著英勇行為的是？',
+o:[['The Victoria Cross','維多利亞十字勳章'],['The Order of Canada','加拿大勳章'],['The Stanley Cup','史丹利杯'],['The Grey Cup','格雷杯']],
+e:'Victoria Cross (V.C.)。',k:[['honour','榮譽'],['bravery','英勇']]},
+{c:'symbols',t:'R',q:'Which holiday celebrates the **anniversary of Confederation**?',z:'哪個節日慶祝「聯邦成立週年」？',
+o:[['Canada Day (July 1)','加拿大國慶日（7 月 1 日）'],['Victoria Day','維多利亞日'],['Remembrance Day','國殤紀念日'],['Thanksgiving','感恩節']],
+e:'anniversary = 週年紀念。',k:[['anniversary','週年']]},
+{c:'symbols',t:'R',q:'**Victoria Day** celebrates:',z:'「維多利亞日」慶祝：',
+o:[['The birthday of the Sovereign (originally Queen Victoria)','君主的生日（原為維多利亞女王）'],['The anniversary of Confederation','聯邦成立週年'],['The end of the First World War','一戰結束'],['The founding of Quebec City','魁北克市建城']],
+e:'5 月 25 日前的星期一。',k:[['celebrates','慶祝']]},
+{c:'symbols',t:'R',q:'Who chose **Ottawa** as the capital in 1857?',z:'1857 年，誰選擇「渥太華」作為首都？',
+o:[['Queen Victoria','維多利亞女王'],['Sir John A. Macdonald','麥克唐納'],['Samuel de Champlain','尚普蘭'],['Lord Durham','德罕勳爵']],
+e:'Queen Victoria 選的，當時是 1857 年（聯邦前）。',k:[['capital','首都']]},
+
+// ===== 經濟 economy =====
+{c:'economy',t:'F',q:'Most Canadians work in which type of industry?',z:'「大多數」加拿大人在哪一類產業工作？',
+o:[['Service industries','服務業'],['Natural resource industries','天然資源業'],['Manufacturing industries','製造業'],['Fishing','漁業']],
+e:'超過 75% 的人在服務業。三大產業：服務、製造、天然資源。',k:[['industry','產業']]},
+{c:'economy',t:'F',q:'Which country is Canada\'s **largest** trading partner?',z:'哪個國家是加拿大「最大」的貿易夥伴？',
+o:[['The United States','美國'],['China','中國'],['The United Kingdom','英國'],['Mexico','墨西哥']],
+e:'美國。兩國有世界上最長的不設防國界。',k:[['trading partner','貿易夥伴']]},
+
+// ===== 地區 regions =====
+{c:'regions',t:'N',q:'Which of the following is **NOT** one of Canada\'s five regions?',z:'下列哪一個「不是」加拿大的五大區域之一？',
+o:[['The Southern Provinces','南部省份'],['The Atlantic Provinces','大西洋省份'],['The Prairie Provinces','草原省份'],['The North','北部']],
+e:'五大區域：大西洋、中部、草原、西岸、北部。',k:[['region','區域']]},
+{c:'regions',t:'N',q:'Canada is bordered by three oceans. Which ocean does **NOT** border Canada?',z:'加拿大被三個海洋包圍，哪個海洋「不」與加拿大相鄰？',
+o:[['The Indian Ocean','印度洋'],['The Pacific Ocean','太平洋'],['The Atlantic Ocean','大西洋'],['The Arctic Ocean','北冰洋']],
+e:'三大洋：太平洋、大西洋、北冰洋。',k:[['bordered by','被……包圍'],['ocean','海洋']]},
+{c:'regions',t:'F',q:'More than **one-third** of Canadians live in which province?',z:'超過「三分之一」的加拿大人住在哪一省？',
+o:[['Ontario','安大略'],['Quebec','魁北克'],['British Columbia','卑詩'],['Alberta','亞伯達']],
+e:'one-third = 三分之一。安大略人口最多。',k:[['one-third','三分之一']]},
+{c:'regions',t:'F',q:'Which is the **smallest** province, known as the "birthplace of Confederation"?',z:'哪一個是「最小」的省，被稱為「聯邦誕生地」？',
+o:[['Prince Edward Island','愛德華王子島'],['Nova Scotia','新斯科舍'],['New Brunswick','新布倫瑞克'],['Newfoundland and Labrador','紐芬蘭與拉布拉多']],
+e:'1864 年夏洛特敦會議在 PEI 舉行，但 PEI 1873 年才加入聯邦。',k:[['smallest','最小的'],['birthplace','誕生地']]},
+{c:'regions',t:'F',q:'Which was the **LAST** province to join Confederation (1949)?',z:'哪一省「最後」加入聯邦（1949）？',
+o:[['Newfoundland and Labrador','紐芬蘭與拉布拉多'],['Prince Edward Island','愛德華王子島'],['British Columbia','卑詩'],['Saskatchewan','薩斯喀徹溫']],
+e:'LAST = 最後。紐芬蘭 1949 年加入。',k:[['last','最後的']]},
+{c:'regions',t:'R',q:'Which territory was created in **1999** from part of the Northwest Territories?',z:'哪個地區在「1999 年」從西北地區劃分出來？',
+o:[['Nunavut','努納武特'],['Yukon','育空'],['Labrador','拉布拉多'],['Manitoba','曼尼托巴']],
+e:'Nunavut = our land，首府 Iqaluit。',k:[['territory','地區（領地）']]},
+{c:'regions',t:'R',q:'Which territory is famous for the **Klondike Gold Rush** of the 1890s?',z:'哪個地區以 1890 年代的「克朗代克淘金潮」聞名？',
+o:[['Yukon','育空'],['Nunavut','努納武特'],['Northwest Territories','西北地區'],['British Columbia','卑詩']],
+e:'Yukon，首府 Whitehorse。',k:[['gold rush','淘金潮']]},
+{c:'regions',t:'S',q:'Which city is known as the "**diamond capital of North America**"?',z:'哪個城市被稱為「北美鑽石之都」？',
+o:[['Yellowknife','黃刀鎮'],['Whitehorse','白馬市'],['Iqaluit','伊卡盧伊特'],['Halifax','哈利法克斯']],
+e:'Yellowknife 是西北地區首府。',k:[['diamond','鑽石']]},
+{c:'regions',t:'N',q:'Which province is **NOT** a Prairie province?',z:'哪一省「不是」草原省份？',
+o:[['British Columbia','卑詩'],['Manitoba','曼尼托巴'],['Saskatchewan','薩斯喀徹溫'],['Alberta','亞伯達']],
+e:'草原三省：曼尼托巴、薩斯喀徹溫、亞伯達。',k:[['Prairie','草原']]},
+{c:'regions',t:'S',q:'**Pier 21** in Halifax is known as:',z:'哈利法克斯的「21 號碼頭」以什麼聞名？',
+o:[['The gateway for over one million immigrants between 1928 and 1971','1928–1971 年間超過一百萬移民的入境門戶'],['Canada\'s largest naval base','加拿大最大海軍基地'],['The place where the Last Spike was driven','最後一根道釘的地方'],['The site of the first Parliament','第一屆國會所在地']],
+e:'gateway = 門戶。',k:[['gateway','門戶'],['immigrants','移民']]},
+{c:'regions',t:'R',q:'Canada\'s largest and busiest port, its gateway to the Asia-Pacific, is in:',z:'加拿大最大、最繁忙的港口，也是通往亞太的門戶，位於：',
+o:[['Vancouver','溫哥華'],['Halifax','哈利法克斯'],['Montreal','蒙特利爾'],['Toronto','多倫多']],
+e:'Port of Vancouver。',k:[['port','港口'],['busiest','最繁忙的']]},
+
+// ===== 是非題 True/False twists =====
+{c:'gov',t:'T',q:'True or False: The **Prime Minister** is Canada\'s Head of State.',z:'是非題：總理是加拿大的國家元首。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。國家元首是君主（國王），總理是政府首腦。',k:[['Head of State','國家元首']]},
+{c:'gov',t:'T',q:'True or False: Senators are **elected** by the people of their province.',z:'是非題：參議員由該省人民選出。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。參議員是「任命」的，不是選出來的。',k:[['elected','選出']]},
+{c:'history',t:'T',q:'True or False: The Charter of Rights and Freedoms became part of the Constitution in **1867**.',z:'是非題：權利與自由憲章在 1867 年成為憲法的一部分。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。是 1982 年。',k:[['became part of','成為……的一部分']]},
+{c:'regions',t:'T',q:'True or False: Nunavut became a territory in **1999**.',z:'是非題：努納武特在 1999 年成為地區。',
+o:[['True','對'],['False','錯']],a:0,f:1,e:'對。',k:[]},
+{c:'justice',t:'T',q:'True or False: The RCMP is the provincial police force in **Ontario**.',z:'是非題：皇家騎警是安大略的省警察。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。安大略的省警察是 OPP（Ontario Provincial Police）。',k:[['police force','警察部隊']]},
+{c:'people',t:'T',q:'True or False: **Quebec** is Canada\'s only officially bilingual province.',z:'是非題：魁北克是加拿大唯一的官方雙語省份。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。是 New Brunswick（新布倫瑞克）。',k:[['bilingual','雙語的']]},
+{c:'modern',t:'T',q:'True or False: **Hockey** is Canada\'s official summer sport.',z:'是非題：冰球是加拿大官方的夏季運動。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。冰球是冬季國家運動；夏季是袋棍球（lacrosse）。',k:[]},
+{c:'rights',t:'T',q:'True or False: Military service is **compulsory** in Canada.',z:'是非題：加拿大必須服兵役。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。加拿大沒有強制兵役。',k:[['compulsory','強制的']]},
+{c:'history',t:'T',q:'True or False: **Lower Canada** later became the province of Ontario.',z:'是非題：下加拿大後來成為安大略省。',
+o:[['True','對'],['False','錯']],a:1,f:1,e:'錯。下加拿大 = 魁北克；上加拿大 = 安大略。',k:[]},
+];
+
+</script>
+<script>
+(function(){
+const CH={rights:'權利與責任',people:'誰是加拿大人',history:'歷史',modern:'現代加拿大',gov:'政府',vote:'選舉',justice:'司法',symbols:'象徵',economy:'經濟',regions:'地區'};
+const TR={N:'否定題 NOT / EXCEPT',R:'反問題',S:'換字題',T:'是非題',W:'找正確句',C:'情境題',F:'最／第一題'};
+const SETS=['A','B','C'];
+const SETNAME={A:'第一套',B:'第二套',C:'第三套'};
+
+// ---- assign questions to sets (round-robin per chapter so each set covers every chapter)
+const ALL=[...Q1,...Q2];
+const byCh={};
+ALL.forEach(q=>{(byCh[q.c]=byCh[q.c]||[]).push(q)});
+const bySet={A:[],B:[],C:[]};
+let rr=0;
+Object.keys(byCh).forEach(c=>{byCh[c].forEach(q=>{const s=SETS[rr%3];rr++;bySet[s].push(q)})});
+SETS.forEach(s=>bySet[s].forEach((q,i)=>{q.set=s;q.id=s+String(i+1).padStart(2,'0');if(q.a==null)q.a=0}));
+const BYID={};ALL.forEach(q=>BYID[q.id]=q);
+
+// ---- wrong-question store: one private book per person (name + PIN), kept in Firestore and synced across devices
+const FB_KEY='AIzaSyBoo7eK2jYNIzKIpOwV-gQ5rk7OLdDaJO0';
+const FB_URL='https://firestore.googleapis.com/v1/projects/citizenship-quiz-27223/databases/(default)/documents/books/';
+let wrong={}; // id -> {n:count, t:timestamp, pick:text}
+let me=null; // {name, id}
+let sync='ok'; // ok | saving | offline
+let flash='';
+try{me=JSON.parse(localStorage.getItem('citz-me')||'null')}catch(e){}
+const lsKey=()=>'citz-wrong:'+me.id, pendKey=()=>'citz-pending:'+me.id;
+function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey())||'{}')}catch(e){return {}}}
+function lsSave(){try{localStorage.setItem(lsKey(),JSON.stringify(wrong))}catch(e){}}
+function setPending(v){try{v?localStorage.setItem(pendKey(),'1'):localStorage.removeItem(pendKey())}catch(e){}}
+function isPending(){try{return localStorage.getItem(pendKey())==='1'}catch(e){return false}}
+async function bookId(name,pin){
+  const d=new TextEncoder().encode('citz-v1|'+name.trim().toLowerCase()+'|'+pin);
+  const h=await crypto.subtle.digest('SHA-256',d);
+  return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+async function fetchBook(id){
+  const r=await fetch(FB_URL+id+'?key='+FB_KEY,{cache:'no-store'});
+  if(r.status===404)return {};
+  if(!r.ok)throw new Error('http '+r.status);
+  const j=await r.json();
+  return JSON.parse(((j.fields||{}).items||{}).stringValue||'{}');
+}
+async function saveBook(id,items){
+  const r=await fetch(FB_URL+id+'?key='+FB_KEY,{method:'PATCH',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({fields:{items:{stringValue:JSON.stringify(items)},updated:{stringValue:new Date().toISOString()}}})});
+  if(!r.ok)throw new Error('http '+r.status);
+}
+let saving=false,dirty=false;
+async function persist(){
+  if(!me)return;
+  lsSave();setPending(true);updateBadge();
+  if(saving){dirty=true;return}
+  saving=true;sync='saving';
+  const id=me.id;
+  try{await saveBook(id,wrong);if(me&&me.id===id){setPending(false);sync='ok'}}catch(e){sync='offline'}
+  saving=false;refreshSyncLabel();
+  if(dirty){dirty=false;persist()}
+}
+async function pull(){
+  if(!me||saving)return;
+  if(isPending()){persist();return} // local changes not uploaded yet: they win
+  const id=me.id;
+  try{
+    const items=await fetchBook(id);
+    if(!me||me.id!==id||saving||isPending())return;
+    sync='ok';
+    if(JSON.stringify(items)!==JSON.stringify(wrong)){wrong=items;lsSave();updateBadge();if(!state.run)render()}
+    else refreshSyncLabel();
+  }catch(e){sync='offline';refreshSyncLabel()}
+}
+function markWrong(q,pickText){const w=wrong[q.id]||{n:0};w.n++;w.t=Date.now();if(pickText)w.pick=pickText;wrong[q.id]=w;persist()}
+function unmark(id){delete wrong[id];persist()}
+function syncLabel(){return sync==='offline'?'離線中，已先存在這台裝置，連上網路會自動同步':sync==='saving'?'同步中…':'已同步，各裝置都看得到'}
+function refreshSyncLabel(){const el=document.getElementById('syncl');if(el)el.textContent=syncLabel()}
+// import link: #import=<base64 of {items}> merges into the signed-in person's book
+function takeImport(){
+  const m=location.hash.match(/^#import=(.+)$/);if(!m)return null;
+  try{return JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))))}catch(e){return null}
+}
+function applyImport(){
+  const imp=takeImport();if(!imp||!me)return;
+  let added=0;
+  Object.keys(imp).forEach(k=>{if(!wrong[k]||(imp[k].n||0)>(wrong[k].n||0)){if(!wrong[k])added++;wrong[k]=imp[k]}});
+  history.replaceState(null,'',location.pathname+location.search);
+  flash=`已匯入舊錯題，新增 ${added} 題到「${me.name}」的錯題本。`;
+  persist();
+}
+async function signIn(name,pin){
+  const id=await bookId(name,pin);
+  me={name:name.trim(),id};
+  try{localStorage.setItem('citz-me',JSON.stringify(me))}catch(e){}
+  wrong=lsLoad();
+  try{
+    if(isPending())await persist();
+    else{wrong=await fetchBook(id);sync='ok';lsSave()}
+  }catch(e){sync='offline'}
+  if(!Object.keys(wrong).length&&!takeImport())flash=`歡迎，${me.name}！這是你的錯題本，目前是空的。如果你之前用過卻看不到錯題，請按右上角「切換」，確認名字和密碼跟之前一樣。`;
+  applyImport();
+}
+function signOut(){me=null;wrong={};flash='';try{localStorage.removeItem('citz-me')}catch(e){}}
+function renderWho(){
+  const el=document.getElementById('who');
+  if(!me){el.innerHTML='';return}
+  el.innerHTML='目前使用者：<b></b><button id="switchUser">切換</button>';
+  el.querySelector('b').textContent=me.name;
+  document.getElementById('switchUser').onclick=()=>{if(state.run&&state.run.timer)clearInterval(state.run.timer);state.run=null;signOut();render()};
+}
+function renderLogin(){
+  view.innerHTML=`<div class="card login">
+  <h2>誰在練習？</h2>
+  <p style="color:var(--muted);margin:6px 0 0;font-size:15px">每個人有自己的錯題本。第一次使用，自己取一個名字和 4 位數密碼，<b>記下來</b>。之後在別的手機或電腦輸入同樣的名字和密碼，就會看到同一本錯題本。</p>
+  <form id="lf">
+  <label for="ln">名字</label><input id="ln" autocomplete="username" maxlength="20" placeholder="例如：太太">
+  <label for="lp">4 位數密碼</label><input id="lp" type="password" inputmode="numeric" autocomplete="current-password" maxlength="4" placeholder="例如：1234">
+  <button class="btn primary" type="submit" id="lb">開始練習</button>
+  <div class="err" id="le"></div></form>
+  <p style="color:var(--muted);font-size:13px;margin:10px 0 0">名字或密碼打錯一個字，會變成另一本空白的錯題本。英文名字大小寫沒有差別。</p></div>`;
+  const f=document.getElementById('lf');
+  f.onsubmit=async ev=>{
+    ev.preventDefault();
+    const n=document.getElementById('ln').value.trim(),p=document.getElementById('lp').value.trim(),er=document.getElementById('le');
+    if(!n){er.textContent='請輸入名字。';return}
+    if(!/^\d{4}$/.test(p)){er.textContent='密碼請輸入 4 個數字。';return}
+    const b=document.getElementById('lb');b.disabled=true;b.textContent='載入中…';
+    await signIn(n,p);
+    if(sync==='offline'&&!Object.keys(wrong).length)flash='目前連不上網路，錯題會先存在這台裝置，連上網路後自動同步。';
+    render();
+  };
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull()});
+window.addEventListener('online',()=>pull());
+setInterval(()=>{if(document.visibilityState==='visible')pull()},60000);
+window.addEventListener('hashchange',()=>{if(me&&takeImport()){applyImport();render()}});
+function updateBadge(){const n=me?Object.keys(wrong).length:0;const b=document.getElementById('wrongBadge');b.textContent=n;b.hidden=n===0}
+
+// ---- helpers
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<mark>$1</mark>');
+const plain=s=>s.replace(/\*\*/g,'');
+const L='ABCD';
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function orderFor(q){const idx=q.o.map((_,i)=>i);return q.f?idx:shuffle(idx)}
+let showZh=true;try{showZh=localStorage.getItem('citz-zh')!=='0'}catch(e){}
+const canSpeak='speechSynthesis' in window;
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(plain(t));u.lang='en-CA';u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+
+// ---- state
+const state={tab:'home',run:null};
+const view=document.getElementById('view');
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{state.tab=b.dataset.tab;if(state.run&&state.run.timer)clearInterval(state.run.timer);state.run=null;render()}));
+
+function render(){
+  renderWho();
+  if(!me){document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected','false'));renderLogin();return}
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===state.tab&&!state.run)));
+  if(state.run){state.run.mode==='exam'?renderExam():renderPractice();return}
+  if(state.tab==='home')renderHome();
+  else if(state.tab==='wrong')renderWrong();
+  else if(state.tab==='time')renderTime();
+  else renderDict();
+  if(flash){const d=document.createElement('div');d.className='flash';d.textContent=flash;view.prepend(d);flash=''}
+}
+
+function setWrongCount(s){return bySet[s].filter(q=>wrong[q.id]).length}
+function renderHome(){
+  let h='<div class="sets">';
+  SETS.forEach(s=>{
+    const n=bySet[s].length,w=setWrongCount(s);
+    h+=`<section class="set"><div class="eyebrow">Set ${s}</div><h3>${SETNAME[s]}</h3>
+    <div class="meta">${n} 題 · 涵蓋全部 10 章 · 錯題 ${w}</div>
+    <div class="actions"><button class="btn primary" data-go="exam" data-set="${s}">模擬考 20 題</button><button class="btn" data-go="practice" data-set="${s}">逐題練習</button></div></section>`;
+  });
+  h+='</div>';
+  h+=`<div class="note"><b>怎麼用：</b>「模擬考」從該套隨機抽 20 題、限時 45 分鐘、答對 15 題才及格，交卷後才看答案，最接近正式考試。「逐題練習」每答一題馬上看解析。答錯的題目會<b>自動記進你自己的錯題本</b>（每個人各自一本，在任何裝置輸入同樣的名字和密碼都會同步），也可以按「我不會」手動加入。錯題本可以匯出成 PDF。</div>
+  <div class="note"><b>正式考試格式：</b>20 題選擇題或是非題，45 分鐘，答對 15 題及格，英文或法文作答。唯一官方教材是 Discover Canada。本題庫的現任官員資料更新到 2026 年 9 月（總督：Louise Arbour，2026 年 6 月上任）。</div>`;
+  view.innerHTML=h;
+  view.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>start(b.dataset.set,b.dataset.go)));
+}
+
+function start(set,mode,list){
+  let qs=list||(mode==='exam'?shuffle(bySet[set]).slice(0,20):bySet[set].slice());
+  state.run={set,mode,qs:qs.map(q=>({q,ord:orderFor(q),pick:null,done:false,zh:false})),i:0,end:Date.now()+45*60*1000,finished:false,right:0,fromWrong:!!list};
+  if(mode==='exam'){state.run.timer=setInterval(tick,1000)}
+  render();window.scrollTo(0,0);
+}
+function tick(){const r=state.run;if(!r||r.finished)return;const left=r.end-Date.now();const el=document.getElementById('timer');if(left<=0){finishExam();return}if(el){el.textContent=fmt(left);el.classList.toggle('low',left<5*60*1000)}}
+const fmt=ms=>{const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+
+function qBlock(it,opts){
+  const q=it.q;const zhOn=showZh||it.zh;
+  let h=`<div class="qhead"><div class="left"><span class="tag">${TR[q.t]}</span><span class="tag ch">${CH[q.c]}</span></div>${opts.right||''}</div>
+  <div class="card"><p class="qen">${hl(q.q)}</p>${zhOn?`<p class="qzh">${esc(q.z)}</p>`:''}
+  <div class="tools">${canSpeak?'<button class="chip" id="spk">朗讀英文</button>':''}<button class="chip" id="zhAll" aria-pressed="${showZh}">中文翻譯：${showZh?'開':'關'}</button>${!showZh?`<button class="chip" id="zhOne">這題看中文</button>`:''}${opts.extraTools||''}</div>
+  <div class="opts">`;
+  it.ord.forEach((oi,k)=>{
+    const o=q.o[oi];let cls='';
+    if(opts.reveal){if(oi===q.a)cls='right';else if(it.pick===oi)cls='wrong'}
+    else if(it.pick===oi)cls='sel';
+    h+=`<button class="opt ${cls}" data-oi="${oi}" ${opts.reveal?'disabled':''}><span class="l">${L[k]}</span><span class="t"><span class="en">${esc(o[0])}</span>${zhOn?`<span class="zh">${esc(o[1])}</span>`:''}</span></button>`;
+  });
+  h+='</div>';
+  if(opts.reveal){
+    const ok=it.pick===q.a;
+    h+=`<div class="fb"><div class="res ${ok?'ok':'no'}">${it.pick==null?'標記為不會':ok?'答對了':'答錯了'}　正確答案：${esc(q.o[q.a][0])}</div><div>${esc(q.e)}</div>${vocab(q)}</div>`;
+  }
+  h+='</div>';
+  return h;
+}
+function vocab(q){return q.k&&q.k.length?`<div class="vocab">${q.k.map(k=>`<span><b>${esc(k[0])}</b> ${esc(k[1])}</span>`).join('')}</div>`:''}
+function bindQ(it,onPick){
+  const q=it.q;
+  const s=document.getElementById('spk');if(s)s.onclick=()=>speak(q.q+' '+it.ord.map((oi,k)=>L[k]+'. '+q.o[oi][0]).join('. '));
+  document.getElementById('zhAll').onclick=()=>{showZh=!showZh;try{localStorage.setItem('citz-zh',showZh?'1':'0')}catch(e){}render()};
+  const one=document.getElementById('zhOne');if(one)one.onclick=()=>{it.zh=true;render()};
+  view.querySelectorAll('.opt:not(:disabled)').forEach(b=>b.onclick=()=>onPick(+b.dataset.oi));
+}
+
+// ---- practice
+function renderPractice(){
+  const r=state.run,it=r.qs[r.i];
+  const title=r.fromWrong?'錯題複習':SETNAME[r.set]+' · 練習';
+  let h=`<div class="sec-title"><h2>${title}</h2><span class="counter">${r.i+1} / ${r.qs.length}</span></div>`;
+  h+=`<div class="bar" style="margin-bottom:14px"><i style="width:${(r.i+1)/r.qs.length*100}%"></i></div>`;
+  h+=qBlock(it,{reveal:it.done,extraTools:!it.done?'<button class="chip" id="idk">我不會</button>':''});
+  h+=`<div class="nav"><button class="btn" id="quit">結束練習</button><div class="row">`;
+  if(it.done&&r.fromWrong&&wrong[it.q.id])h+=`<button class="btn" id="learned">已學會，移出錯題本</button>`;
+  h+=`<button class="btn primary" id="next" ${it.done?'':'disabled'}>${r.i+1<r.qs.length?'下一題':'完成'}</button></div></div>`;
+  view.innerHTML=h;
+  bindQ(it,oi=>{it.pick=oi;it.done=true;if(oi!==it.q.a)markWrong(it.q,it.q.o[oi][0]);else r.right++;render()});
+  const idk=document.getElementById('idk');if(idk)idk.onclick=()=>{it.pick=null;it.done=true;markWrong(it.q,'（我不會）');render()};
+  const le=document.getElementById('learned');if(le)le.onclick=()=>{unmark(it.q.id);render()};
+  document.getElementById('quit').onclick=()=>{state.run=null;render()};
+  document.getElementById('next').onclick=()=>{if(r.i+1<r.qs.length){r.i++;render();window.scrollTo(0,0)}else{practiceDone()}};
+}
+function practiceDone(){
+  const r=state.run,n=r.qs.length;
+  view.innerHTML=`<div class="card score"><div class="eyebrow">練習完成</div><div class="big">${r.right}<span style="font-size:24px;color:var(--muted)"> / ${n}</span></div><p>答錯與「我不會」的題目都已記進錯題本。</p><div class="row" style="justify-content:center"><button class="btn primary" id="toWrong">看錯題本</button><button class="btn" id="home">回到題組</button></div></div>`;
+  state.run=null;
+  document.getElementById('toWrong').onclick=()=>{state.tab='wrong';render()};
+  document.getElementById('home').onclick=()=>{state.tab='home';render()};
+}
+
+// ---- exam
+function renderExam(){
+  const r=state.run;
+  if(r.finished){renderResult();return}
+  const it=r.qs[r.i];
+  let h=`<div class="sec-title"><h2>${SETNAME[r.set]} · 模擬考</h2><span class="timer" id="timer">${fmt(r.end-Date.now())}</span></div>`;
+  h+=qBlock(it,{reveal:false,right:`<span class="counter">第 ${r.i+1} / 20 題</span>`});
+  h+=`<div class="dots">${r.qs.map((x,k)=>`<button data-k="${k}" class="${x.pick!=null?'done':''} ${k===r.i?'cur':''}" aria-label="第 ${k+1} 題">${k+1}</button>`).join('')}</div>`;
+  const answered=r.qs.filter(x=>x.pick!=null).length;
+  h+=`<div class="nav"><button class="btn" id="prev" ${r.i===0?'disabled':''}>上一題</button><div class="row"><button class="btn" id="next" ${r.i===r.qs.length-1?'disabled':''}>下一題</button><button class="btn primary" id="submit">交卷（已答 ${answered}/20）</button></div></div>`;
+  h+=`<div class="status" id="confirm"></div>`;
+  view.innerHTML=h;
+  bindQ(it,oi=>{it.pick=oi;if(r.i<r.qs.length-1)r.i++;render()});
+  view.querySelectorAll('.dots button').forEach(b=>b.onclick=()=>{r.i=+b.dataset.k;render()});
+  document.getElementById('prev').onclick=()=>{r.i--;render()};
+  document.getElementById('next').onclick=()=>{r.i++;render()};
+  document.getElementById('submit').onclick=()=>{
+    const un=r.qs.length-answered;
+    if(un>0&&!r.confirming){r.confirming=true;document.getElementById('confirm').innerHTML=`還有 ${un} 題沒作答，未作答算錯。<button class="btn" id="sure" style="margin-left:8px">確定交卷</button>`;document.getElementById('sure').onclick=finishExam;return}
+    finishExam();
+  };
+}
+function finishExam(){
+  const r=state.run;if(!r||r.finished)return;
+  r.finished=true;clearInterval(r.timer);
+  r.right=0;r.qs.forEach(it=>{if(it.pick===it.q.a)r.right++;else markWrong(it.q,it.pick==null?'（未作答）':it.q.o[it.pick][0])});
+  render();window.scrollTo(0,0);
+}
+function renderResult(){
+  const r=state.run,pass=r.right>=15;
+  let h=`<div class="card score"><div class="eyebrow">${SETNAME[r.set]} · 模擬考成績</div><div class="big ${pass?'pass':'fail'}">${r.right}<span style="font-size:24px;color:var(--muted)"> / 20</span></div><p><b class="${pass?'pass':'fail'}">${pass?'及格':'未及格'}</b>　及格標準：15 題</p><div class="row" style="justify-content:center"><button class="btn primary" id="again">再考一次（重新抽題）</button><button class="btn" id="home">回到題組</button></div></div>`;
+  const wrongs=r.qs.filter(it=>it.pick!==it.q.a);
+  h+=`<div class="sec-title" style="margin-top:22px"><h2>錯的 ${wrongs.length} 題</h2><span class="counter">已記進錯題本</span></div><div class="list">`;
+  wrongs.forEach(it=>{h+=itemHtml(it.q,it.pick==null?'（未作答）':it.q.o[it.pick][0],false)});
+  h+='</div>';
+  view.innerHTML=h;
+  document.getElementById('again').onclick=()=>start(r.set,'exam');
+  document.getElementById('home').onclick=()=>{state.run=null;state.tab='home';render()};
+}
+function itemHtml(q,pick,withActions){
+  return `<article class="item"><div class="qhead"><div class="left"><span class="tag">${TR[q.t]}</span><span class="tag ch">${CH[q.c]}</span></div><span class="counter">${q.id}</span></div>
+  <p class="qen">${hl(q.q)}</p><p class="qzh">${esc(q.z)}</p>
+  <div class="ans">正確答案：<span class="en">${esc(q.o[q.a][0])}</span>（${esc(q.o[q.a][1])}）</div>
+  ${pick?`<div class="your">你選的：${esc(pick)}</div>`:''}
+  <div style="margin-top:6px;font-size:15px">${esc(q.e)}</div>${vocab(q)}
+  ${withActions?`<div class="foot"><span>錯 ${wrong[q.id].n} 次</span><button class="btn" data-rm="${q.id}">已學會，移除</button></div>`:''}</article>`;
+}
+
+// ---- wrong book
+function renderWrong(){
+  const ids=Object.keys(wrong).filter(id=>BYID[id]).sort((a,b)=>(wrong[b].n-wrong[a].n)||a.localeCompare(b));
+  let h=`<div class="sec-title"><h2>錯題本（${ids.length} 題）</h2><span class="counter" id="syncl">${syncLabel()}</span></div>`;
+  if(!ids.length){view.innerHTML=h+'<div class="empty">還沒有錯題。去做一套模擬考，答錯的題目會自動出現在這裡。</div>';return}
+  h+=`<div class="row"><button class="btn primary" id="review">錯題重練</button><button class="btn" id="pdf">匯出 PDF</button><button class="btn" id="clr">清空錯題本</button></div><div class="status" id="st"></div><div class="list">`;
+  ids.forEach(id=>{h+=itemHtml(BYID[id],wrong[id].pick,true)});
+  h+='</div>';
+  view.innerHTML=h;
+  document.getElementById('review').onclick=()=>start(null,'practice',shuffle(ids.map(id=>BYID[id])));
+  view.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{unmark(b.dataset.rm);render()});
+  const clr=document.getElementById('clr');let armed=false;
+  clr.onclick=()=>{if(!armed){armed=true;clr.textContent='再按一次確定清空';return}wrong={};persist();render()};
+  document.getElementById('pdf').onclick=()=>exportPdf(ids);
+}
+
+// ---- PDF export: draw pages on canvas (keeps Chinese fonts), assemble with jsPDF
+async function exportPdf(ids){
+  const st=document.getElementById('st');const btn=document.getElementById('pdf');
+  if(!window.jspdf){st.textContent='PDF 元件沒有載入，請重新整理頁面後再試。';return}
+  btn.disabled=true;st.textContent='正在產生 PDF…';
+  try{
+    const qs=ids.map(id=>BYID[id]);
+    const allText=qs.map(q=>q.q+q.z+q.o.map(o=>o.join('')).join('')+q.e+(q.k||[]).flat().join('')).join('')+'入籍陷阱題錯題本正確答案你選的解析關鍵字第頁共題';
+    try{await Promise.all(['400 20px "Noto Sans TC"','700 20px "Noto Sans TC"','400 20px "Atkinson Hyperlegible"','700 20px "Atkinson Hyperlegible"'].map(f=>document.fonts.load(f,allText)))}catch(e){}
+    const W=1240,H=1754,M=100,CW=W-M*2;
+    const EN='"Atkinson Hyperlegible", Arial, sans-serif',ZH='"Noto Sans TC", "PingFang TC", sans-serif';
+    const pages=[];let cv,cx,y;
+    const newPage=()=>{cv=document.createElement('canvas');cv.width=W;cv.height=H;cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,W,H);cx.textBaseline='top';y=M;pages.push(cv)};
+    const tok=s=>s.match(/[⺀-鿿＀-￯　-〿]|[^\s⺀-鿿＀-￯　-〿]+|\s+/g)||[];
+    function wrap(ctx,text,font,width){ctx.font=font;const lines=[];let line='';for(const t of tok(text)){const test=line+t;if(ctx.measureText(test).width>width&&line.trim()){lines.push(line.trimEnd());line=t.trimStart()}else line=test}if(line.trim())lines.push(line.trimEnd());return lines}
+    const date=new Date().toLocaleDateString('zh-TW');
+    // measure a block with a scratch context
+    const scratch=document.createElement('canvas').getContext('2d');
+    function blockLines(q,n){
+      const w=wrong[q.id]||{};
+      const parts=[];
+      parts.push({f:`500 22px ${ZH}`,c:'#A34405',t:`${n}. ${TR[q.t]} · ${CH[q.c]} · 錯 ${w.n||1} 次`,gap:6});
+      parts.push({f:`700 32px ${EN}`,c:'#15202A',t:plain(q.q),lh:44,gap:6});
+      parts.push({f:`400 26px ${ZH}`,c:'#566471',t:q.z,lh:38,gap:12});
+      q.o.forEach((o,i)=>{const ok=i===q.a;parts.push({f:`${ok?700:400} 27px ${EN}`,c:ok?'#146C3E':'#15202A',t:(ok?'✔ ':'○ ')+o[0]+'　'+o[1],lh:38,gap:4,ind:10})});
+      if(w.pick)parts.push({f:`400 24px ${ZH}`,c:'#AE2318',t:'你選的：'+w.pick,lh:34,gap:8});
+      parts.push({f:`400 25px ${ZH}`,c:'#15202A',t:'解析：'+q.e,lh:37,gap:6});
+      if(q.k&&q.k.length)parts.push({f:`400 23px ${ZH}`,c:'#0F5E6B',t:'關鍵字：'+q.k.map(k=>k[0]+' '+k[1]).join('；'),lh:34,gap:0});
+      let h=0;parts.forEach(p=>{p.lines=wrap(scratch,p.t,p.f,CW-(p.ind||0));p.lh=p.lh||32;h+=p.lines.length*p.lh+p.gap});
+      return {parts,h:h+44};
+    }
+    newPage();
+    cx.fillStyle='#0F5E6B';cx.font=`500 20px ${EN}`;cx.fillText('CANADIAN CITIZENSHIP TEST · TRAP EDITION',M,y);y+=34;
+    cx.fillStyle='#15202A';cx.font=`700 46px ${ZH}`;cx.fillText('入籍陷阱題 錯題本',M,y);y+=64;
+    cx.fillStyle='#566471';cx.font=`400 24px ${ZH}`;cx.fillText(`共 ${qs.length} 題 · 匯出日期 ${date} · 綠色打勾為正確答案`,M,y);y+=50;
+    cx.fillStyle='#D3DBDF';cx.fillRect(M,y,CW,2);y+=34;
+    qs.forEach((q,i)=>{
+      const b=blockLines(q,i+1);
+      if(y+b.h>H-M)newPage();
+      b.parts.forEach(p=>{cx.fillStyle=p.c;cx.font=p.f;p.lines.forEach(l=>{cx.fillText(l,M+(p.ind||0),y);y+=p.lh});y+=p.gap});
+      y+=20;cx.fillStyle='#E7ECEE';cx.fillRect(M,y,CW,2);y+=24;
+    });
+    pages.forEach((p,i)=>{const c=p.getContext('2d');c.fillStyle='#94A3AF';c.font=`400 20px ${ZH}`;c.textAlign='center';c.fillText(`第 ${i+1} / ${pages.length} 頁`,W/2,H-60)});
+    const pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
+    pages.forEach((p,i)=>{if(i)pdf.addPage();pdf.addImage(p.toDataURL('image/jpeg',0.9),'JPEG',0,0,210,297)});
+    const blob=pdf.output('blob');
+    const fname='citizenship-wrong-questions-'+new Date().toISOString().slice(0,10)+'.pdf';
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+    st.textContent=`已匯出 ${qs.length} 題（${pages.length} 頁）。`;
+  }catch(e){st.textContent='產生 PDF 時出了問題，請重新整理後再試。'}
+  btn.disabled=false;
+}
+
+
+// ---- timelines, all visible at once
+function renderTime(){
+  const EXP=[
+   ['1867','Ontario, Quebec, Nova Scotia, New Brunswick','安大略、魁北克、新斯科舍、新布倫瑞克','聯邦成立的「原始四省」。7 月 1 日。','Which province was NOT one of the original four?'],
+   ['1870','Manitoba, Northwest Territories','曼尼托巴、西北地區','Louis Riel 紅河起義後，曼尼托巴建省。','Which province joined as a result of the Métis uprising?'],
+   ['1871','British Columbia','卑詩','條件：聯邦承諾建鐵路通到西岸（1885 完工）。','B.C. joined because Ottawa promised to…'],
+   ['1873','Prince Edward Island','愛德華王子島','最小的省；1864 夏洛特敦會議在這裡開，是「聯邦誕生地」，但晚到 1873 才加入。','Which smallest province is the "birthplace of Confederation"?'],
+   ['1880','Arctic Islands','北極群島','北極群島移交給加拿大（併入西北地區）。',''],
+   ['1898','Yukon Territory','育空','克朗代克淘金潮（1890 年代）。首府 Whitehorse。','Which territory is famous for the Klondike Gold Rush?'],
+   ['1905','Alberta, Saskatchewan','亞伯達、薩斯喀徹溫','同一年成立的兩個草原省。','Which two provinces joined in the same year, 1905?'],
+   ['1949','Newfoundland and Labrador','紐芬蘭與拉布拉多','「最後」加入的省。','Which was the LAST province to join Confederation?'],
+   ['1999','Nunavut','努納武特','從西北地區劃出。Nunavut = "our land"，首府 Iqaluit。','Which territory was created in 1999?'],
+  ];
+  const PPL=[
+   ['1497','John Cabot','約翰·卡博特','為英國航行的義大利人，第一個畫出加拿大東岸地圖。','Who was the first to map Canada\'s East Coast?'],
+   ['1534–42','Jacques Cartier','雅克·卡蒂埃','三次橫渡大西洋，為法國國王宣佈擁有土地；聽到 "kanata"（村莊）。','Who claimed the land for the King of France?'],
+   ['1604','Pierre de Monts & Samuel de Champlain','德蒙與尚普蘭','在 St. Croix 島、Port-Royal 建立佛羅里達以北第一個歐洲定居點。',''],
+   ['1608','Samuel de Champlain','尚普蘭','建立魁北克市，稱「新法蘭西之父」。','Who founded Quebec City?'],
+   ['1759','James Wolfe & Marquis de Montcalm','沃爾夫與蒙卡姆','亞伯拉罕平原戰役，英國擊敗法國，兩位將軍都戰死。','Which battle ended France\'s empire in America?'],
+   ['1793','John Graves Simcoe','西姆科','上加拿大副總督，讓上加拿大成為大英帝國第一個走向廢奴的省。','Which was the first province in the Empire to move toward abolishing slavery?'],
+   ['1812','Sir Isaac Brock','布洛克少將','攻下底特律，後在昆士頓高地陣亡。','Who captured Detroit but was killed at Queenston Heights?'],
+   ['1812','Tecumseh','特庫姆塞','肖尼族酋長，協助防衛加拿大。',''],
+   ['1813','Laura Secord','蘿拉·席科德','走約 30 公里去警告 FitzGibbon 中尉美軍要來。','Who walked 30 km to warn of an American attack?'],
+   ['1813','Charles de Salaberry','德薩拉伯里','在 Châteauguay 率軍擊退美軍。',''],
+   ['1849','Louis-Hippolyte La Fontaine','拉方丹','與 Robert Baldwin 合作；加拿大第一位責任政府領袖。','Who was the first head of a responsible government?'],
+   ['1867','Sir John A. Macdonald','麥克唐納','第一任總理；肖像在 10 元紙鈔；1 月 11 日紀念日。','Sir John A. Macdonald is best known as…'],
+   ['1867','Sir George-Étienne Cartier','卡蒂埃爵士','魁北克的聯邦之父（不是總理）。',''],
+   ['1869–70 · 1885','Louis Riel','路易·瑞爾','梅蒂人領袖，紅河起義促成曼尼托巴建省；1885 西北起義後被處決。','Which province joined as a result of the uprising led by Louis Riel?'],
+   ['1870s','Alexander Graham Bell','貝爾','在安大略 Brantford 構想出電話。','Which invention is linked to Alexander Graham Bell?'],
+   ['1891','James Naismith','奈史密斯','發明籃球。','Which sport did James Naismith invent?'],
+   ['1892','Lord Stanley','史丹利勳爵','總督，捐贈 Stanley Cup（冰球）。Lord Grey 捐 Grey Cup（足球）。','The Stanley Cup was donated by…'],
+   ['1896','Sir Wilfrid Laurier','勞雷爾','聯邦後第一位法裔總理；肖像在 5 元紙鈔。','Who was the first French-Canadian Prime Minister?'],
+   ['1915','John McCrae','約翰·麥克雷','軍醫，寫下《In Flanders Fields》。','Who wrote "In Flanders Fields"?'],
+   ['1916','Manitoba (women\'s vote)','曼尼托巴','第一個給女性投票權的省。Dr. Emily Stowe 是加拿大第一位行醫的女性，推動女性權利。','Which was the FIRST province to give women the vote?'],
+   ['1921','Agnes Macphail','艾格妮絲·麥克菲爾','第一位當選國會議員的女性。','Who was the first woman elected to the House of Commons?'],
+   ['1921','Frederick Banting & Charles Best','班廷與貝斯特','發現胰島素，治療糖尿病。','Banting and Best are known for…'],
+   ['1980','Terry Fox','泰瑞·福克斯','失去一條腿仍跑「希望馬拉松」，為癌症研究募款。','Terry Fox is remembered for…'],
+  ];
+  const li=r=>`<li><div class="yr">${esc(r[0])}</div><div><div class="who">${esc(r[1])}<small>${esc(r[2])}</small></div><div class="what">${esc(r[3])}</div>${r[4]?`<div class="ask">換句話問：<span>${esc(r[4])}</span></div>`:''}</div></li>`;
+  view.innerHTML=`<div class="sec-title"><h2>聯邦擴張時間軸</h2><span class="counter">1867 → 1999</span></div><ol class="tl">${EXP.map(li).join('')}</ol>
+  <div class="sec-title" style="margin-top:26px"><h2>人物時間軸</h2><span class="counter">${PPL.length} 位</span></div><ol class="tl">${PPL.map(li).join('')}</ol>
+  <div class="note">整頁一次看完，不用逐條點開。橘色框是這個事實在考試中可能出現的「換句話」問法。</div>`;
+}
+
+// ---- trap dictionary
+function renderDict(){
+  const rows=[
+  ['NOT / EXCEPT','「不是」／「除了」。要選那個「錯的、不屬於的」選項。最常見的陷阱，看到就先圈起來。'],
+  ['Which statement is TRUE / FALSE?','哪一句是「對的」／「錯的」。四個選項都是完整句子，要一句一句判斷。'],
+  ['BEST describes','「最能描述」。可能不只一個選項部分正確，選最完整的那個。'],
+  ['FIRST / LAST / LARGEST / ONLY','第一個／最後一個／最大／唯一。例如「第一個給女性投票權的省」≠ 聯邦。'],
+  ['Head of State ↔ Head of Government','國家元首（國王）↔ 政府首腦（總理）。只差一個字，答案完全不同。'],
+  ['represents','代表。「Who represents the Sovereign?」= 總督，不是國王本人。'],
+  ['appointed ↔ elected','任命 ↔ 選出。參議員是 appointed，國會議員是 elected。'],
+  ['federal / provincial / municipal','聯邦／省／市政府。題目常只換這個字來問職責。'],
+  ['refers to / is known as / means','指的是／被稱為／意思是。給你名詞，問定義（或反過來）。'],
+  ['responsibility ↔ right','責任 ↔ 權利。守法、陪審、投票是責任；遷徙、宗教自由是權利。'],
+  ['as a result of / because','由於／因為。問原因或結果，要看清楚題目問的是哪一邊。'],
+  ['compulsory / mandatory','強制的、義務的。加拿大兵役不是 compulsory。'],
+  ['Upper ↔ Lower','上加拿大 = 安大略；下加拿大 = 魁北克（河流上下游，不是地圖上下）。'],
+  ['National anthem ↔ Royal anthem','國歌 O Canada ↔ 皇家頌歌 God Save the King。'],
+  ['winter sport ↔ summer sport','冰球是冬季；袋棍球 lacrosse 是夏季。'],
+  ['entrenched / amended','寫入（確立）／修改。常見於憲法、憲章題。'],
+  ];
+  view.innerHTML=`<div class="sec-title"><h2>陷阱字典</h2><span class="counter">看到這些字要放慢</span></div>
+  <div class="dictwrap"><table class="dict"><thead><tr><th>英文</th><th>意思與陷阱</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('')}</tbody></table></div>
+  <div class="note"><b>考試技巧：</b>先找題目裡的「否定字」和「最、第一」；讀完四個選項再選；不確定的題目先跳過，最後回來。正式考試可以前後翻題。</div>`;
+}
+
+if(me){wrong=lsLoad();pull().then(applyImport)}
+updateBadge();render();
+})();
+</script>
+
+</body></html>
